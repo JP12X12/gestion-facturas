@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transferencias Bancarias</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+[data-theme="dark"]{--bg:#0f1117;--surface:#181c27;--surface2:#1e2336;--surface3:#242840;--border:#2a3050;--border2:#3a4470;--text:#d4daf0;--text-dim:#7a85a8;--text-bright:#eef2ff;--accent:#4a7cff;--accent2:#2d55cc;--accent-text:#fff;--green-bg:#1a3a1e;--green-b:#2e6b35;--green-t:#5ddb6e;--yellow-bg:#3a3010;--yellow-b:#7a6520;--yellow-t:#f0c040;--red-bg:#3a1015;--red-b:#7a2530;--red-t:#f06070;--shadow:rgba(0,0,0,.5);}
+[data-theme="light"]{--bg:#f4f6fb;--surface:#ffffff;--surface2:#eef1f8;--surface3:#e4e8f5;--border:#d0d7ea;--border2:#b0bcd8;--text:#2a3050;--text-dim:#6b7799;--text-bright:#0f1a38;--accent:#3366ff;--accent2:#1a44cc;--accent-text:#fff;--green-bg:#e6f9ea;--green-b:#3ea84d;--green-t:#1e7a2c;--yellow-bg:#fffbe6;--yellow-b:#d4a500;--yellow-t:#8a6200;--red-bg:#fff0f2;--red-b:#d44455;--red-t:#9b1c2a;--shadow:rgba(0,0,0,.12);}
+[data-theme="blue"]{--bg:#060d1f;--surface:#0b1530;--surface2:#0f1c3a;--surface3:#152248;--border:#1a2d55;--border2:#253f78;--text:#c0cef5;--text-dim:#607099;--text-bright:#e0eaff;--accent:#2979ff;--accent2:#1a5acc;--accent-text:#fff;--green-bg:#0a2218;--green-b:#1a6040;--green-t:#30d080;--yellow-bg:#1a1500;--yellow-b:#806000;--yellow-t:#ffd040;--red-bg:#1a0808;--red-b:#802030;--red-t:#ff5060;--shadow:rgba(0,0,0,.7);}
+[data-theme="green"]{--bg:#050f0a;--surface:#081a0f;--surface2:#0c2015;--surface3:#10281a;--border:#1a3d26;--border2:#265c38;--text:#a8d8b8;--text-dim:#4d8860;--text-bright:#d0f0de;--accent:#22c55e;--accent2:#16a34a;--accent-text:#050f0a;--green-bg:#0c2818;--green-b:#1a5030;--green-t:#4ade80;--yellow-bg:#1a1a00;--yellow-b:#6b6b00;--yellow-t:#facc15;--red-bg:#1a0808;--red-b:#7a2020;--red-t:#f87171;--shadow:rgba(0,0,0,.7);}
+[data-theme="contrast"]{--bg:#000000;--surface:#0a0a0a;--surface2:#111111;--surface3:#1a1a1a;--border:#333333;--border2:#555555;--text:#ffffff;--text-dim:#aaaaaa;--text-bright:#ffffff;--accent:#ffff00;--accent2:#cccc00;--accent-text:#000;--green-bg:#001a00;--green-b:#00aa00;--green-t:#00ff00;--yellow-bg:#1a1a00;--yellow-b:#aaaa00;--yellow-t:#ffff00;--red-bg:#1a0000;--red-b:#aa0000;--red-t:#ff4444;--shadow:rgba(255,255,255,.1);}
+[data-theme="warm"]{--bg:#1a1208;--surface:#231a0e;--surface2:#2e2214;--surface3:#3a2b1a;--border:#4a3820;--border2:#6a5030;--text:#e8d8b8;--text-dim:#9a8060;--text-bright:#f8ecd8;--accent:#e8980a;--accent2:#c07808;--accent-text:#fff;--green-bg:#0e1a0a;--green-b:#3a6020;--green-t:#80c840;--yellow-bg:#2a1e00;--yellow-b:#8a6000;--yellow-t:#f8c020;--red-bg:#1a0a08;--red-b:#8a2818;--red-t:#f06040;--shadow:rgba(0,0,0,.6);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{transition:background .3s,color .3s;}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px var(--shadow);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;color:var(--accent-text);}
+.logo h1{font-size:15px;font-weight:600;color:var(--text-bright);}
+.logo span{font-size:11px;color:var(--text-dim);font-weight:300;}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.stat-pill{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.dot-g{background:var(--green-t);}.dot-y{background:var(--yellow-t);}.dot-r{background:var(--red-t);}
+.theme-picker{display:flex;align-items:center;gap:5px;padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;}
+.theme-lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-right:2px;}
+.theme-swatch{width:16px;height:16px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0;}
+.theme-swatch:hover{transform:scale(1.2);}
+.theme-swatch.active{border-color:var(--text-bright);transform:scale(1.15);}
+.sw-dark{background:linear-gradient(135deg,#0f1117 50%,#4a7cff 50%);}
+.sw-light{background:linear-gradient(135deg,#f4f6fb 50%,#3366ff 50%);}
+.sw-blue{background:linear-gradient(135deg,#060d1f 50%,#2979ff 50%);}
+.sw-green{background:linear-gradient(135deg,#050f0a 50%,#22c55e 50%);}
+.sw-contrast{background:linear-gradient(135deg,#000 50%,#ffff00 50%);}
+.sw-warm{background:linear-gradient(135deg,#1a1208 50%,#e8980a 50%);}
+.upload-panel{background:var(--surface);border-bottom:1px solid var(--border);overflow:hidden;max-height:0;transition:max-height .35s ease,padding .35s ease;}
+.upload-panel.open{max-height:220px;padding:14px 20px;}
+.upload-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.upload-zone{flex:1;min-width:220px;border:2px dashed var(--border2);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s,background .2s;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(74,124,255,.06);}
+.upload-zone input[type=file]{display:none;}
+.upload-label{font-size:12px;color:var(--text-dim);line-height:1.5;}
+.upload-label strong{color:var(--text);font-weight:500;}
+.upload-controls{display:flex;flex-direction:column;gap:8px;}
+.filter-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);white-space:nowrap;}
+input[type=text],select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 9px;outline:none;transition:border-color .2s;}
+input[type=text]:focus,select:focus{border-color:var(--accent);}
+select{cursor:pointer;}select option{background:var(--surface2);}
+.div{width:1px;height:20px;background:var(--border);margin:0 2px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:5px;border:1px solid;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2);}
+.btn-ghost{background:transparent;border-color:var(--border2);color:var(--text-dim);}
+.btn-ghost:hover{border-color:var(--text-dim);color:var(--text);}
+.btn-danger{background:transparent;border-color:var(--red-b);color:var(--red-t);}
+.btn-danger:hover{background:var(--red-bg);}
+.btn-warn{background:transparent;border-color:var(--yellow-b);color:var(--yellow-t);}
+.btn-warn:hover{background:var(--yellow-bg);}
+.btn-green{background:var(--green-bg);border-color:var(--green-b);color:var(--green-t);}
+.btn-green:hover{filter:brightness(1.15);}
+.btn-csv{background:transparent;border-color:var(--green-b);color:var(--green-t);}
+.btn-csv:hover{background:var(--green-bg);}
+.btn-lg{padding:8px 20px;font-size:13px;}
+.action-bar{padding:8px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg);flex-wrap:wrap;gap:8px;}
+.results-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+.results-count span{color:var(--text-bright);font-weight:600;}
+.legend{display:flex;gap:12px;align-items:center;}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-dim);}
+.legend-block{width:10px;height:10px;border-radius:2px;border:1px solid;}
+.table-wrap{overflow-x:auto;padding:0 20px 4px;}
+table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:10px;}
+thead tr{background:var(--surface2);border-bottom:2px solid var(--border2);}
+th{padding:8px 9px;text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--surface)!important;}
+td{padding:7px 9px;vertical-align:middle;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+td[title]{cursor:help;}
+.row-green{background:var(--green-bg);border-left:3px solid var(--green-b);}
+.row-yellow{background:var(--yellow-bg);border-left:3px solid var(--yellow-b);}
+.row-red{background:var(--red-bg);border-left:3px solid var(--red-b);}
+.row-green td:first-child,.row-yellow td:first-child,.row-red td:first-child{padding-left:6px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:10.5px;font-weight:600;border:1px solid;white-space:nowrap;}
+.bg{background:rgba(93,219,110,.12);color:var(--green-t);border-color:var(--green-b);}
+.by{background:rgba(240,192,64,.12);color:var(--yellow-t);border-color:var(--yellow-b);}
+.br{background:rgba(240,96,112,.12);color:var(--red-t);border-color:var(--red-b);}
+.bn{background:rgba(122,133,168,.12);color:var(--text-dim);border-color:var(--border);}
+.importe{font-weight:600;text-align:right;white-space:nowrap;}
+.cbu-cell{font-size:10.5px;color:var(--text-dim);}
+.th-sort{cursor:pointer;user-select:none;white-space:nowrap;}
+.th-sort:hover{color:var(--text-bright);}
+.sort-icon{display:inline-block;margin-left:4px;opacity:.4;font-style:normal;font-size:11px;transition:opacity .15s;}
+.th-sort.asc .sort-icon::after{content:'↑';opacity:1;color:var(--accent);}
+.th-sort.desc .sort-icon::after{content:'↓';opacity:1;color:var(--accent);}
+.th-sort:not(.asc):not(.desc) .sort-icon::after{content:'↕';}
+.pdf-btn{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--red-b);color:var(--red-t);background:transparent;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s;}
+.pdf-btn:hover{background:var(--red-bg);}
+.pdf-none{color:var(--border2);font-size:10px;}
+.pdf-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);}
+.pdf-bar.ok{color:var(--green-t);}.pdf-bar.warn{color:var(--yellow-t);}
+.pagination{display:flex;align-items:center;justify-content:center;gap:4px;padding:14px 20px;border-top:1px solid var(--border);background:var(--bg);flex-wrap:wrap;}
+.page-info{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);padding:0 10px;}
+.page-info span{color:var(--text-bright);font-weight:600;}
+.pg-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 10px;border-radius:5px;cursor:pointer;transition:all .15s;min-width:34px;text-align:center;}
+.pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--text-bright);}
+.pg-btn:disabled{opacity:.35;cursor:default;}
+.pg-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text);font-weight:600;}
+.pg-btn.pg-dots{cursor:default;border-color:transparent;background:transparent;}
+.page-size-wrap{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);padding:0 8px;}
+.page-size-wrap select{width:auto;padding:4px 8px;font-size:11px;}
+.empty,.loading{text-align:center;padding:50px 20px;color:var(--text-dim);}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.4;}
+.empty h3{font-size:14px;color:var(--text);margin-bottom:5px;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(3px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;width:min(780px,95vw);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px var(--shadow);transform:translateY(12px);transition:transform .25s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.modal-title{font-size:16px;font-weight:600;color:var(--text-bright);}
+.modal-sub{font-size:12px;color:var(--text-dim);margin-top:3px;}
+.modal-close{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:18px 22px;overflow-y:auto;flex:1;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.sum-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center;}
+.sum-num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--text-bright);}
+.sum-lbl{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.sum-box.s-new .sum-num{color:var(--green-t);}.sum-box.s-new{border-color:var(--green-b);}
+.sum-box.s-dup .sum-num{color:var(--yellow-t);}.sum-box.s-dup{border-color:var(--yellow-b);}
+.dup-section-title{font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.dup-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.dup-table th{padding:6px 8px;text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);border-bottom:1px solid var(--border2);background:var(--surface2);}
+.dup-table td{padding:6px 8px;border-bottom:1px solid var(--border);}
+.dup-table tr:last-child td{border-bottom:none;}
+.val-old{color:var(--text-dim);text-decoration:line-through;}
+.val-new{color:var(--yellow-t);font-weight:600;}
+.val-same{color:var(--text-dim);}
+.changed{background:rgba(240,192,64,.05);}
+.arrow{color:var(--text-dim);margin:0 4px;}
+.no-dupes{text-align:center;padding:20px;color:var(--text-dim);font-size:12px;}
+.modal-note{font-size:11px;color:var(--text-dim);}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:13px;color:var(--text-bright);box-shadow:0 4px 20px var(--shadow);z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:360px;}
+#toast.show{opacity:1;transform:translateY(0);}
+#toast.success{border-color:var(--green-b);}#toast.error{border-color:var(--red-b);}#toast.warn{border-color:var(--yellow-b);}
+::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+.op-range-popup{position:absolute;top:calc(100% + 6px);left:0;z-index:300;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;box-shadow:0 8px 28px var(--shadow);min-width:240px;display:none;}
+.op-range-popup.open{display:block;}
+.op-range-popup .fl{display:block;margin-bottom:6px;}
+.op-range-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.op-range-row input{width:90px;}
+.op-range-actions{display:flex;gap:6px;margin-top:4px;}
+.op-range-wrap{position:relative;display:inline-flex;align-items:center;}
+.btn-op-range{padding:5px 9px;font-size:11px;}
+.btn-op-range.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">TB</div>
+    <div><h1>Transferencias Bancarias</h1><span id="db-info">Cargando...</span></div>
+  </div>
+  <div class="header-right">
+    <div class="stat-pill"><span class="dot dot-g"></span><span id="sg">0</span> Ejecutadas</div>
+    <div class="stat-pill"><span class="dot dot-y"></span><span id="sy">0</span> Autorizadas</div>
+    <div class="stat-pill"><span class="dot dot-r"></span><span id="sr">0</span> Anuladas/Rechazadas</div>
+    <div class="theme-picker">
+      <span class="theme-lbl">Tema</span>
+      <div class="theme-swatch sw-dark active" data-theme="dark"     title="Oscuro"         onclick="setTheme('dark')"></div>
+      <div class="theme-swatch sw-light"       data-theme="light"    title="Claro"          onclick="setTheme('light')"></div>
+      <div class="theme-swatch sw-blue"        data-theme="blue"     title="Azul noche"     onclick="setTheme('blue')"></div>
+      <div class="theme-swatch sw-green"       data-theme="green"    title="Verde matrix"   onclick="setTheme('green')"></div>
+      <div class="theme-swatch sw-contrast"    data-theme="contrast" title="Alto contraste" onclick="setTheme('contrast')"></div>
+      <div class="theme-swatch sw-warm"        data-theme="warm"     title="Cálido"         onclick="setTheme('warm')"></div>
+    </div>
+    <a href="/" class="btn btn-ghost" style="text-decoration:none">← Panel</a>
+    <button class="btn btn-ghost" onclick="toggleUpload()">⬆ Importar TXT</button>
+  </div>
+</header>
+
+<div class="pdf-bar" id="pdf-bar" style="display:none"><span id="pdf-bar-text"></span></div>
+
+<div class="upload-panel" id="upload-panel">
+  <div class="upload-inner">
+    <label class="upload-zone" id="upload-zone">
+      <input type="file" id="file-input" accept=".txt">
+      <span style="font-size:22px;opacity:.7">📄</span>
+      <div class="upload-label"><strong id="file-name">Seleccionar archivo .TXT</strong><br>Arrastrá el archivo aquí o hacé clic para seleccionar</div>
+    </label>
+    <div class="upload-controls">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="uploadFile()" id="btn-upload">⬆ Analizar e Importar</button>
+        <button class="btn btn-ghost" onclick="toggleUpload()">Cancelar</button>
+        <button class="btn btn-danger" onclick="clearDB()">🗑 Vaciar DB</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim)">El sistema detecta duplicados antes de importar.</div>
+    </div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <span class="fl">Fecha</span>
+  <input type="text" id="f-fd" placeholder="dd/mm/aaaa" maxlength="10" style="width:108px" oninput="fmtDate(this)">
+  <span style="color:var(--text-dim);font-size:11px">—</span>
+  <input type="text" id="f-fh" placeholder="dd/mm/aaaa" maxlength="10" style="width:108px" oninput="fmtDate(this)">
+  <div class="div"></div>
+  <span class="fl">N° OP</span>
+  <input type="text" id="f-op" placeholder="Buscar..." style="width:130px">
+  <div class="op-range-wrap">
+    <button class="btn btn-ghost btn-op-range" id="btn-op-range" onclick="toggleOpRange(event)" title="Filtrar por rango de N° OP">⇔ Rango</button>
+    <div class="op-range-popup" id="op-range-popup">
+      <span class="fl">Rango N° Orden Pago</span>
+      <div class="op-range-row">
+        <input type="text" id="f-op-desde" placeholder="Desde" style="width:90px" oninput="this.value=this.value.replace(/\D/g,'')">
+        <span style="color:var(--text-dim);font-size:11px">—</span>
+        <input type="text" id="f-op-hasta" placeholder="Hasta" style="width:90px" oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+      <div class="op-range-actions">
+        <button class="btn btn-primary" style="font-size:11px;padding:4px 10px" onclick="applyOpRange()">Aplicar</button>
+        <button class="btn btn-ghost"   style="font-size:11px;padding:4px 10px" onclick="clearOpRange()">✕ Limpiar</button>
+      </div>
+    </div>
+  </div>
+  <div class="div"></div>
+  <span class="fl">CUIT / CBU / Nombre</span>
+  <input type="text" id="f-cuit" placeholder="Buscar..." style="width:180px">
+  <div class="div"></div>
+  <span class="fl">Cuenta Débito</span>
+  <select id="f-deb" style="width:140px">
+    <option value="">Todas</option>
+    <option value="0110599520000054862355">Integración</option>
+    <option value="0110599520000037223575">Turismo</option>
+  </select>
+  <div class="div"></div>
+  <span class="fl">Estado</span>
+  <select id="f-est" style="width:150px">
+    <option value="">Todos</option>
+    <option value="Ejecutada">Ejecutada</option>
+    <option value="Enviada">Enviada Banco Crédito</option>
+    <option value="Autorizada">Autorizada</option>
+    <option value="Anulada">Anulada</option>
+    <option value="Rechazada">Rechazada</option>
+  </select>
+  <div class="div"></div>
+  <button class="btn btn-primary" onclick="applyFilters()">🔍 Filtrar</button>
+  <button class="btn btn-ghost"   onclick="clearFilters()">✕ Limpiar</button>
+</div>
+
+<div class="action-bar">
+  <div class="results-count">Mostrando <span id="count">0</span> de <span id="total-count">0</span> registros</div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-block" style="background:var(--green-bg);border-color:var(--green-b)"></div>Ejecutada/Enviada</div>
+      <div class="legend-item"><div class="legend-block" style="background:var(--yellow-bg);border-color:var(--yellow-b)"></div>Autorizada</div>
+      <div class="legend-item"><div class="legend-block" style="background:var(--red-bg);border-color:var(--red-b)"></div>Anulada/Rechazada</div>
+    </div>
+    <button class="btn btn-warn" id="color-btn" onclick="toggleColors()">🎨 Ocultar colores</button>
+    <button class="btn btn-csv"  id="csv-btn"   onclick="downloadCSV()">⬇ Exportar CSV</button>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th class="th-sort desc" id="th-fecha" onclick="toggleSort()" title="Ordenar por fecha"><span>Fecha</span><i class="sort-icon"></i></th>
+        <th>N° Orden Pago</th><th>Tipo</th><th>Banco Crédito</th>
+        <th>CBU</th><th>CUIT</th><th>Nombre / Razón Social</th>
+        <th>Moneda</th><th style="text-align:right">Importe</th><th>Estado</th><th>PDF</th>
+      </tr>
+    </thead>
+    <tbody id="tb"><tr><td colspan="12" class="loading"><span class="spinner"></span>Cargando...</td></tr></tbody>
+  </table>
+</div>
+
+<div class="pagination" id="pagination" style="display:none">
+  <div class="page-size-wrap">Filas:
+    <select id="page-size-sel" onchange="changePageSize(this.value)">
+      <option value="50">50</option><option value="100" selected>100</option>
+      <option value="200">200</option><option value="500">500</option>
+    </select>
+  </div>
+  <button class="pg-btn" id="pg-first" onclick="goPage(1)" title="Primera">«</button>
+  <button class="pg-btn" id="pg-prev"  onclick="goPage(curPage-1)" title="Anterior">‹</button>
+  <span id="pg-numbers" style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center"></span>
+  <button class="pg-btn" id="pg-next"  onclick="goPage(curPage+1)" title="Siguiente">›</button>
+  <button class="pg-btn" id="pg-last"  onclick="goPage(totalPages)" title="Última">»</button>
+  <div class="page-info">Pág <span id="pg-cur">1</span> / <span id="pg-total">1</span></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">📋 Revisión antes de importar</div><div class="modal-sub" id="modal-sub">Analizando...</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <span class="modal-note" id="modal-note"></span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost"        onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-warn btn-lg"  id="btn-skip-dupes"   onclick="confirmImport(false)" style="display:none">⏭ Ignorar duplicados · solo nuevos</button>
+        <button class="btn btn-green btn-lg" id="btn-update-dupes" onclick="confirmImport(true)"  style="display:none">🔄 Actualizar duplicados + nuevos</button>
+        <button class="btn btn-primary btn-lg" id="btn-only-new"   onclick="confirmImport(false)" style="display:none">✓ Importar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const API = "/trans/api";
+let colorsOn=true,curSort='fecha_desc',allRows=[],curPage=1,totalPages=1,curFilters={},pageSize=100,pendingToken=null;
+
+document.addEventListener("DOMContentLoaded",()=>{
+  initTheme(); loadData(); loadStats(); loadPdfStatus(); setupDnD();
+  document.getElementById("file-input").addEventListener("change",e=>{
+    if(e.target.files[0]) document.getElementById("file-name").textContent=e.target.files[0].name;
+  });
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!isModalOpen()) applyFilters(); });
+
+function initTheme(){ const s=localStorage.getItem("tb_theme")||"dark"; applyTheme(s,false); }
+function setTheme(t){ applyTheme(t,true); localStorage.setItem("tb_theme",t); }
+function applyTheme(t,animate){
+  if(!animate) document.documentElement.style.transition="none";
+  document.documentElement.setAttribute("data-theme",t);
+  if(!animate) setTimeout(()=>document.documentElement.style.transition="",50);
+  document.querySelectorAll(".theme-swatch").forEach(s=>s.classList.toggle("active",s.dataset.theme===t));
+}
+function setupDnD(){
+  const z=document.getElementById("upload-zone");
+  z.addEventListener("dragover",e=>{e.preventDefault();z.classList.add("drag");});
+  z.addEventListener("dragleave",()=>z.classList.remove("drag"));
+  z.addEventListener("drop",e=>{
+    e.preventDefault();z.classList.remove("drag");
+    const f=e.dataTransfer.files[0];
+    if(f){document.getElementById("file-input").files=e.dataTransfer.files;document.getElementById("file-name").textContent=f.name;}
+  });
+}
+function fmtDate(el){
+  let v=el.value.replace(/\D/g,"");
+  if(v.length>2) v=v.slice(0,2)+"/"+v.slice(2);
+  if(v.length>5) v=v.slice(0,5)+"/"+v.slice(5,9);
+  el.value=v;
+}
+async function loadPdfStatus(){
+  try{
+    const d=await(await fetch(API+"/pdf-status")).json();
+    const bar=document.getElementById("pdf-bar"),txt=document.getElementById("pdf-bar-text");
+    bar.style.display="flex";
+    if(d.exists&&d.count>0){bar.className="pdf-bar ok";txt.innerHTML=`📁 <strong>${d.dir}</strong> — ${d.count} PDF${d.count!==1?"s":""}`;}
+    else if(d.exists){bar.className="pdf-bar warn";txt.innerHTML=`📁 Carpeta vacía: <strong>${d.dir}</strong>`;}
+    else{bar.className="pdf-bar warn";txt.innerHTML=`📁 Sin carpeta de comprobantes: <strong>${d.dir}</strong>`;}
+  }catch{}
+}
+function toggleUpload(){ document.getElementById("upload-panel").classList.toggle("open"); }
+async function uploadFile(){
+  const fi=document.getElementById("file-input");
+  if(!fi.files[0]){showToast("Seleccioná un archivo primero.","error");return;}
+  const btn=document.getElementById("btn-upload");
+  btn.disabled=true;
+  showProgress("Enviando archivo al servidor…",2);
+  const fd=new FormData(); fd.append("file",fi.files[0]);
+  try{
+    const data=await(await fetch(API+"/preview",{method:"POST",body:fd})).json();
+    if(!data.success){hideProgress();btn.disabled=false;showToast("✗ "+data.message,"error");return;}
+    pollJob(data.job_id,btn);
+  }catch(e){hideProgress();btn.disabled=false;showToast("Error: "+e.message,"error");}
+}
+async function pollJob(jobId,btn){
+  const interval=setInterval(async()=>{
+    try{
+      const d=await(await fetch(API+"/job?id="+jobId)).json();
+      if(d.status==="running"){showProgress(d.step||"Procesando…",d.pct||0);}
+      else if(d.status==="done"){
+        clearInterval(interval);hideProgress();btn.disabled=false;
+        pendingToken=d.result.token;openModal(d.result);
+        document.getElementById("upload-panel").classList.remove("open");
+      }else if(d.status==="error"){
+        clearInterval(interval);hideProgress();btn.disabled=false;
+        showToast("✗ "+(d.error||"Error desconocido"),"error");
+      }
+    }catch(e){}
+  },800);
+}
+function showProgress(step,pct){
+  let ov=document.getElementById("progress-overlay");
+  if(!ov){
+    ov=document.createElement("div");ov.id="progress-overlay";
+    ov.innerHTML=`<div id="progress-box"><div style="font-size:13px;font-weight:600;color:var(--text-bright);margin-bottom:14px">📄 Procesando archivo TXT</div><div id="prog-bar-wrap"><div id="prog-bar-fill"></div></div><div id="prog-pct">0%</div><div id="prog-step">Iniciando…</div></div>`;
+    Object.assign(ov.style,{position:"fixed",inset:"0",background:"rgba(0,0,0,.75)",backdropFilter:"blur(4px)",zIndex:"600",display:"flex",alignItems:"center",justifyContent:"center"});
+    const box=ov.querySelector("#progress-box");
+    Object.assign(box.style,{background:"var(--surface)",border:"1px solid var(--border2)",borderRadius:"12px",padding:"28px 36px",minWidth:"320px",textAlign:"center",boxShadow:"0 20px 60px var(--shadow)"});
+    Object.assign(ov.querySelector("#prog-bar-wrap").style,{background:"var(--surface3)",borderRadius:"8px",height:"10px",overflow:"hidden",margin:"0 0 8px"});
+    Object.assign(ov.querySelector("#prog-bar-fill").style,{background:"var(--accent)",height:"100%",borderRadius:"8px",width:"0%",transition:"width .5s ease"});
+    Object.assign(ov.querySelector("#prog-pct").style,{fontFamily:"'IBM Plex Mono',monospace",fontSize:"22px",fontWeight:"600",color:"var(--accent)",margin:"4px 0 8px"});
+    Object.assign(ov.querySelector("#prog-step").style,{fontSize:"12px",color:"var(--text-dim)",minHeight:"18px"});
+    document.body.appendChild(ov);
+  }
+  ov.style.display="flex";
+  ov.querySelector("#prog-bar-fill").style.width=pct+"%";
+  ov.querySelector("#prog-pct").textContent=pct+"%";
+  ov.querySelector("#prog-step").textContent=step;
+}
+function hideProgress(){const ov=document.getElementById("progress-overlay");if(ov)ov.style.display="none";}
+function isModalOpen(){ return document.getElementById("modal-overlay").classList.contains("open"); }
+function openModal(data){
+  const{nuevos,duplicados,total,dupes_preview}=data;
+  document.getElementById("modal-sub").textContent=`${total} registros encontrados`;
+  let html=`<div class="summary-grid">
+    <div class="sum-box"><div class="sum-num">${total}</div><div class="sum-lbl">Total en archivo</div></div>
+    <div class="sum-box s-new"><div class="sum-num">${nuevos}</div><div class="sum-lbl">Nuevos</div></div>
+    <div class="sum-box s-dup"><div class="sum-num">${duplicados}</div><div class="sum-lbl">Ya en DB</div></div>
+  </div>`;
+  if(duplicados>0){
+    html+=`<div class="dup-section-title">Duplicados detectados</div>
+    <table class="dup-table"><thead><tr><th>N° Transferencia</th><th>N° OP</th><th>Nombre</th><th>Estado</th><th>Importe</th></tr></thead><tbody>`;
+    for(const d of dupes_preview){
+      const ec=d.estado_old!==d.estado_new,ic=d.importe_old!==d.importe_new;
+      html+=`<tr class="${(ec||ic)?'changed':''}">
+        <td>${x(d.numero)}</td><td>${x(d.nro_op)}</td>
+        <td title="${x(d.nombre)}">${trunc(d.nombre,28)}</td>
+        <td>${ec?`<span class="val-old">${x(d.estado_old)}</span><span class="arrow">→</span><span class="val-new">${x(d.estado_new)}</span>`:`<span class="val-same">${x(d.estado_old)}</span>`}</td>
+        <td class="importe">${ic?`<span class="val-old">${x(d.importe_old)}</span><span class="arrow">→</span><span class="val-new">${x(d.importe_new)}</span>`:`<span class="val-same">${x(d.importe_old)}</span>`}</td>
+      </tr>`;
+    }
+    if(duplicados>50) html+=`<tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:8px">… y ${duplicados-50} más</td></tr>`;
+    html+=`</tbody></table>`;
+  }else html+=`<div class="no-dupes" style="color:var(--green-t)">✓ Sin duplicados.</div>`;
+  document.getElementById("modal-body").innerHTML=html;
+  const note=document.getElementById("modal-note");
+  const btnS=document.getElementById("btn-skip-dupes"),btnU=document.getElementById("btn-update-dupes"),btnO=document.getElementById("btn-only-new");
+  btnS.style.display=btnU.style.display=btnO.style.display="none";
+  if(duplicados>0&&nuevos>0){note.textContent=`${nuevos} nuevos. ¿Qué hacemos con los ${duplicados} duplicados?`;btnS.style.display=btnU.style.display="inline-flex";}
+  else if(duplicados>0&&nuevos===0){note.textContent="Sin registros nuevos. ¿Actualizamos?";btnS.textContent="✕ No hacer nada";btnS.style.display=btnU.style.display="inline-flex";}
+  else{note.textContent=`${nuevos} nuevos listos.`;btnO.style.display="inline-flex";}
+  document.getElementById("modal-overlay").classList.add("open");
+}
+function closeModal(){document.getElementById("modal-overlay").classList.remove("open");pendingToken=null;}
+function closeModalOutside(e){if(e.target===document.getElementById("modal-overlay"))closeModal();}
+async function confirmImport(ud){
+  if(!pendingToken){showToast("Token expirado.","error");return;}
+  ["btn-skip-dupes","btn-update-dupes","btn-only-new"].forEach(id=>{const el=document.getElementById(id);if(el){el.disabled=true;el.style.opacity=".5";}});
+  try{
+    const data=await(await fetch(API+"/confirm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:pendingToken,update_dupes:ud})})).json();
+    closeModal();
+    if(data.success){showToast("✓ "+data.message,data.updated>0?"warn":"success");loadData();loadStats();}
+    else showToast("✗ "+data.message,"error");
+  }catch(e){showToast("Error: "+e.message,"error");}
+}
+async function clearDB(){
+  if(!confirm("¿Vaciar toda la base de datos?"))return;
+  const d=await(await fetch(API+"/clear",{method:"POST"})).json();
+  showToast(d.message,"success");loadData();loadStats();
+}
+async function loadData(f={},page=1){
+  curFilters=f;curPage=page;
+  const p=new URLSearchParams();
+  if(f.fecha_desde)p.set("fecha_desde",f.fecha_desde);if(f.fecha_hasta)p.set("fecha_hasta",f.fecha_hasta);
+  if(f.nro_op)p.set("nro_op",f.nro_op);if(f.cuit)p.set("cuit",f.cuit);
+  if(f.debito)p.set("debito",f.debito);if(f.estado)p.set("estado",f.estado);
+  p.set("page",page);p.set("page_size",pageSize);p.set("sort",curSort);
+  document.getElementById("tb").innerHTML=`<tr><td colspan="12" class="loading"><span class="spinner"></span>Cargando...</td></tr>`;
+  try{
+    const data=await(await fetch(API+"/data?"+p)).json();
+    allRows=data.rows;totalPages=data.total_pages;curPage=data.page;
+    render(allRows);
+    document.getElementById("count").textContent=data.rows.length;
+    document.getElementById("total-count").textContent=data.total;
+    renderPagination(data.total,data.page,data.total_pages);
+  }catch(e){document.getElementById("tb").innerHTML=`<tr><td colspan="12" class="empty"><div class="empty-icon">⚠️</div><h3>Error</h3><p>${e.message}</p></td></tr>`;}
+}
+async function loadStats(){
+  try{
+    const d=await(await fetch(API+"/stats")).json();
+    let g=0,y=0,r=0;
+    for(const[est,cnt]of Object.entries(d.estados||{})){
+      const e=est.toLowerCase();
+      if(isG(e))g+=cnt;else if(isY(e))y+=cnt;else if(isR(e))r+=cnt;
+    }
+    document.getElementById("sg").textContent=g;
+    document.getElementById("sy").textContent=y;
+    document.getElementById("sr").textContent=r;
+    document.getElementById("db-info").textContent=`Base de datos local — ${d.total} registros`;
+  }catch{}
+}
+function goPage(p){
+  p=Math.max(1,Math.min(p,totalPages));if(p===curPage)return;
+  loadData(curFilters,p);document.querySelector(".table-wrap").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function changePageSize(val){pageSize=parseInt(val);loadData(curFilters,1);}
+function renderPagination(total,page,tPages){
+  const pg=document.getElementById("pagination");
+  if(total===0){pg.style.display="none";return;}pg.style.display="flex";
+  document.getElementById("pg-cur").textContent=page;document.getElementById("pg-total").textContent=tPages;
+  document.getElementById("pg-first").disabled=page<=1;document.getElementById("pg-prev").disabled=page<=1;
+  document.getElementById("pg-next").disabled=page>=tPages;document.getElementById("pg-last").disabled=page>=tPages;
+  const nums=document.getElementById("pg-numbers");nums.innerHTML="";
+  const mkBtn=(n,label,cls="")=>{const b=document.createElement("button");b.className="pg-btn"+(n===page?" active":"")+(cls?" "+cls:"");b.textContent=label||n;if(cls!=="pg-dots")b.onclick=()=>goPage(n);nums.appendChild(b);};
+  const dots=()=>mkBtn(0,"…","pg-dots");
+  if(tPages<=9){for(let i=1;i<=tPages;i++)mkBtn(i);}
+  else{mkBtn(1);if(page>4)dots();const s=Math.max(2,page-2),e=Math.min(tPages-1,page+2);for(let i=s;i<=e;i++)mkBtn(i);if(page<tPages-3)dots();mkBtn(tPages);}
+}
+function downloadCSV(){
+  const p=new URLSearchParams();
+  if(curFilters.fecha_desde)p.set("fecha_desde",curFilters.fecha_desde);if(curFilters.fecha_hasta)p.set("fecha_hasta",curFilters.fecha_hasta);
+  if(curFilters.nro_op)p.set("nro_op",curFilters.nro_op);if(curFilters.cuit)p.set("cuit",curFilters.cuit);
+  if(curFilters.debito)p.set("debito",curFilters.debito);if(curFilters.estado)p.set("estado",curFilters.estado);
+  p.set("sort",curSort);
+  const a=document.createElement("a");a.href=API+"/csv"+(p.toString()?"?"+p:"");a.download="transferencias.csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);showToast("⬇ Descargando CSV...","success");
+}
+function render(rows){
+  const tb=document.getElementById("tb");
+  if(!rows||!rows.length){tb.innerHTML=`<tr><td colspan="12"><div class="empty"><div class="empty-icon">📭</div><h3>Sin registros</h3><p>Importá un archivo .TXT o ajustá los filtros.</p></div></td></tr>`;return;}
+  tb.innerHTML=rows.map(r=>{
+    const rc=colorsOn?rowClass(r.estado):"";
+    const b=badge(r.estado);
+    const cbu=r.cc_cbu?r.cc_cbu.replace(/(.{4})/g,'$1 ').trim():"";
+    const pdfCell=r.has_pdf?`<a class="pdf-btn" href="${API}/pdf?numero=${encodeURIComponent(r.numero||'')}&nro_op=${encodeURIComponent(r.nro_orden_pago||'')}" target="_blank">📄 Ver</a>`:`<span class="pdf-none">—</span>`;
+    return `<tr class="${rc}">
+      <td title="${x(r.numero)}">${x(r.numero)}</td><td>${x(r.fecha_solicitud)}</td>
+      <td style="font-weight:600">${x(r.nro_orden_pago)}</td><td>${x(r.tipo_transferencia)}</td>
+      <td title="${x(r.cc_banco)}">${x(r.cc_banco)||trunc(r.cuenta_credito,18)}</td>
+      <td class="cbu-cell" title="${x(r.cc_cbu)}">${cbu}</td>
+      <td class="cbu-cell">${x(r.cc_cuit)}</td>
+      <td title="${x(r.cc_nombre)}">${x(r.cc_nombre)||'—'}</td>
+      <td>${x(r.moneda)}</td><td class="importe">${x(r.importe)}</td>
+      <td>${b}</td><td>${pdfCell}</td>
+    </tr>`;
+  }).join("");
+}
+function toggleSort(){
+  curSort=curSort==='fecha_desc'?'fecha_asc':'fecha_desc';
+  const th=document.getElementById('th-fecha');
+  th.classList.toggle('asc',curSort==='fecha_asc');th.classList.toggle('desc',curSort==='fecha_desc');
+  loadData(curFilters,1);
+}
+function applyFilters(){
+  loadData({fecha_desde:document.getElementById("f-fd").value.trim(),fecha_hasta:document.getElementById("f-fh").value.trim(),
+    nro_op:document.getElementById("f-op").value.trim(),
+    op_desde:document.getElementById("f-op-desde").value.trim(),
+    op_hasta:document.getElementById("f-op-hasta").value.trim(),
+    cuit:document.getElementById("f-cuit").value.trim(),
+    debito:document.getElementById("f-deb").value.trim(),estado:document.getElementById("f-est").value.trim()},1);
+}
+function clearFilters(){
+  ["f-fd","f-fh","f-op","f-cuit","f-op-desde","f-op-hasta"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-deb").value="";document.getElementById("f-est").value="";
+  document.getElementById("btn-op-range").classList.remove("active");
+  loadData({},1);
+}
+function isG(e){return e.includes("ejecutada")||e.includes("enviada");}
+function toggleOpRange(e){
+  e.stopPropagation();
+  document.getElementById("op-range-popup").classList.toggle("open");
+}
+function applyOpRange(){
+  const desde=document.getElementById("f-op-desde").value.trim();
+  const hasta=document.getElementById("f-op-hasta").value.trim();
+  document.getElementById("btn-op-range").classList.toggle("active",!!(desde||hasta));
+  document.getElementById("op-range-popup").classList.remove("open");
+  applyFilters();
+}
+function clearOpRange(){
+  document.getElementById("f-op-desde").value="";
+  document.getElementById("f-op-hasta").value="";
+  document.getElementById("btn-op-range").classList.remove("active");
+  document.getElementById("op-range-popup").classList.remove("open");
+  applyFilters();
+}
+document.addEventListener("click",function(e){
+  const popup=document.getElementById("op-range-popup");
+  const wrap=document.querySelector(".op-range-wrap");
+  if(popup&&popup.classList.contains("open")&&wrap&&!wrap.contains(e.target)){popup.classList.remove("open");}
+});
+function isY(e){return e.includes("autorizada");}
+function isR(e){return e.includes("anulada")||e.includes("rechazada");}
+function rowClass(est){if(!est)return"";const e=est.toLowerCase();if(isG(e))return"row-green";if(isY(e))return"row-yellow";if(isR(e))return"row-red";return"";}
+function badge(est){
+  if(!est)return`<span class="badge bn">—</span>`;const e=est.toLowerCase();
+  if(isG(e))return`<span class="badge bg"><span class="dot dot-g"></span>${x(est)}</span>`;
+  if(isY(e))return`<span class="badge by"><span class="dot dot-y"></span>${x(est)}</span>`;
+  if(isR(e))return`<span class="badge br"><span class="dot dot-r"></span>${x(est)}</span>`;
+  return`<span class="badge bn">${x(est)}</span>`;
+}
+function toggleColors(){colorsOn=!colorsOn;document.getElementById("color-btn").textContent=colorsOn?"🎨 Ocultar colores":"🎨 Mostrar colores";render(allRows);}
+function trunc(s,n){return s&&s.length>n?s.slice(0,n)+"…":(s||"");}
+function x(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function showToast(msg,type){const t=document.getElementById("toast");t.textContent=msg;t.className="show "+(type||"");clearTimeout(t._t);t._t=setTimeout(()=>t.className="",3800);}
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Bases de datos
+*.db
+
+# Archivos temporales de Python
+__pycache__/
+archivo/
+*.pyc
+
+# Archivos de prueba (opcional, si no los quieres en el repo)
+prueba.py
+prueba.html

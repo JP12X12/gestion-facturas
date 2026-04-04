@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel de Herramientas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+:root{--bg:#07080f;--surface:#0d0f1c;--surface2:#13162a;--border:#1c2035;--border2:#262b45;--text:#9aa0c0;--text-dim:#3a4060;--bright:#e8ecff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;
+background-image:radial-gradient(ellipse at 20% 30%,rgba(59,130,246,.06) 0%,transparent 55%),radial-gradient(ellipse at 80% 70%,rgba(139,92,246,.05) 0%,transparent 55%),linear-gradient(rgba(255,255,255,.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.013) 1px,transparent 1px);background-size:auto,auto,44px 44px,44px 44px;}
+.header{text-align:center;margin-bottom:52px;}
+.header-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;margin-bottom:22px;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 2.5s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.header h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,58px);font-weight:800;color:var(--bright);letter-spacing:-.03em;line-height:1.05;margin-bottom:12px;}
+.header h1 em{font-style:normal;background:linear-gradient(100deg,#6366f1,#818cf8,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header p{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;width:100%;max-width:720px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;position:relative;}
+.card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px var(--c);border-color:var(--c);}
+.card:active{transform:translateY(-2px);}
+.card-accent{height:3px;background:var(--c);}
+.card-inner{padding:28px 28px 24px;}
+.card-icon{width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,var(--c) 15%,transparent);border:1px solid color-mix(in srgb,var(--c) 30%,transparent);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px;}
+.card-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--bright);letter-spacing:-.01em;margin-bottom:8px;}
+.card-desc{font-size:12px;color:var(--text-dim);line-height:1.65;font-family:'IBM Plex Mono',monospace;margin-bottom:24px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.status{display:flex;align-items:center;gap:7px;font-size:11px;font-family:'IBM Plex Mono',monospace;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);transition:background .3s,box-shadow .3s;}
+.status.online .status-dot{background:#4ade80;box-shadow:0 0 8px #4ade8088;}
+.status.offline .status-dot{background:#374151;}
+.status.online .status-label{color:#4ade80;}
+.status.offline .status-label{color:var(--text-dim);}
+.open-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:9px;border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:var(--c);color:#fff;transition:filter .15s,opacity .15s;text-decoration:none;}
+.open-btn:hover{filter:brightness(1.15);}
+.open-btn.waiting{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border2);cursor:not-allowed;pointer-events:none;}
+.port-tag{position:absolute;top:18px;right:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 7px;}
+footer{margin-top:52px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-dim);text-align:center;line-height:1.8;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge"><span class="badge-dot"></span>Sistema local activo</div>
+  <h1>Panel de<br><em>Herramientas</em></h1>
+  <p>// Seleccioná una app para abrirla en una pestaña nueva</p>
+</div>
+
+<div class="cards">
+
+  <div class="card" style="--c:#3b82f6" onclick="abrirApp(8080,'btn-trans')">
+    <div class="card-accent"></div>
+    <div class="port-tag">:8080</div>
+    <div class="card-inner">
+      <div class="card-icon">🏦</div>
+      <div class="card-name">BD Transferencias</div>
+      <div class="card-desc">Gestión de transferencias bancarias.<br>Filtros, comprobantes PDF y exportación CSV.</div>
+      <div class="card-footer">
+        <div class="status offline" id="status-8080">
+          <span class="status-dot"></span><span class="status-label">Verificando...</span>
+        </div>
+        <a id="btn-trans" class="open-btn waiting" href="/trans" target="_blank">Abrir →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="--c:#8b5cf6" onclick="abrirApp(8081,'btn-fact')">
+    <div class="card-accent"></div>
+    <div class="port-tag">:8081</div>
+    <div class="card-inner">
+      <div class="card-icon">🧾</div>
+      <div class="card-name">BD Facturas</div>
+      <div class="card-desc">Visualización y gestión de facturas.<br>Importación desde Excel.</div>
+        <div class="status offline" id="status-8081">
+          <span class="status-dot"></span><span class="status-label">Verificando...</span>
+        </div>
+        <a id="btn-fact" class="open-btn waiting" href="/facturas" target="_blank">Abrir →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="--c:#a855f7" onclick="abrirApp(0,'btn-ops')">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+      <div class="card-icon">⚖️</div>
+      <div class="card-name">Resumen Cuenta Corriente</div>
+      <div class="card-desc">Vista unificada de facturas y pagos por prestador. <br></div>
+      <div class="card-footer">
+        <div class="status offline" id="status-ops">
+          <span class="status-dot"></span><span class="status-label">Verificando...</span>
+        </div>
+        <a id="btn-ops" class="open-btn waiting" href="/ops" target="_blank">Abrir →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Todos los servidores corren localmente en tu máquina<br>
+  Cerrá la ventana del .bat para detenerlos
+</footer>
+
+<script>
+const apps = [
+  { endpoint: "/ops/api/stats",   statusId: "status-ops", btnId: "btn-ops",  href: "/ops" },
+  { endpoint: "/trans/api/stats",    statusId: "status-8080", btnId: "btn-trans", href: "/trans"    },
+  { endpoint: "/facturas/api/stats", statusId: "status-8081", btnId: "btn-fact",  href: "/facturas" },
+];
+
+function abrirApp(port, btnId) {
+  if (document.getElementById(btnId).classList.contains("waiting")) return;
+  window.open(apps.find(a=>a.btnId===btnId).href, "_blank");
+}
+
+async function checkApp(app) {
+  const st  = document.getElementById(app.statusId);
+  const btn = document.getElementById(app.btnId);
+  try {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(()=>ctrl.abort(), 3000);
+    const res  = await fetch(app.endpoint, {signal:ctrl.signal});
+    clearTimeout(tid);
+    if (res.ok) {
+      const data = await res.json();
+      st.className = "status online";
+      st.querySelector(".status-label").textContent =
+        data.total !== undefined ? `${data.total} registros` : "En línea";
+      btn.classList.remove("waiting");
+      btn.href = app.href;
+    } else { throw new Error(); }
+  } catch {
+    st.className = "status offline";
+    st.querySelector(".status-label").textContent = "Offline";
+    btn.classList.add("waiting");
+  }
+}
+
+async function pollAll() { await Promise.all(apps.map(checkApp)); }
+pollAll();
+setInterval(pollAll, 5000);
+</script>
+</body>
+</html>

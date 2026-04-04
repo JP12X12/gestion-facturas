@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Panel Unificado</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+        /* ═══════════════════════════════════════════
+           TU PALETA DE COLORES ORIGINAL
+        ═══════════════════════════════════════════ */
+        [data-theme="dark"] {
+          --bg:#0f1117; --surface:#181c27; --surface2:#1e2336; --surface3:#242840;
+          --border:#2a3050; --border2:#3a4470;
+          --text:#d4daf0; --text-dim:#7a85a8; --text-bright:#eef2ff;
+          --accent:#4a7cff; --accent2:#2d55cc; --accent-text:#fff;
+          --green-bg:#1a3a1e; --green-b:#2e6b35; --green-t:#5ddb6e;
+          --yellow-bg:#3a3010; --yellow-b:#7a6520; --yellow-t:#f0c040;
+          --red-bg:#3a1015; --red-b:#7a2530; --red-t:#f06070;
+          --shadow:rgba(0,0,0,.5);
+        }
+        /* ... (Acá iría el resto de tus paletas light, blue, etc. Las omito para no hacer el bloque gigante, pero pegalas enteras) ... */
+
+        /* ═══════════════════════════════════════════
+           TU BASE ORIGINAL
+        ═══════════════════════════════════════════ */
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html{transition:background .3s,color .3s;}
+        body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:100vh;}
+
+        input[type=text], input[type=password] {
+            background:var(--surface2); border:1px solid var(--border); border-radius:5px;
+            color:var(--text); font-family:'IBM Plex Mono',monospace; font-size:12px;
+            padding:10px 12px; outline:none; transition:border-color .2s; width: 100%;
+        }
+        input[type=text]:focus, input[type=password]:focus {border-color:var(--accent);}
+
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:10px 13px;border-radius:5px;border:1px solid;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;width:100%;}
+        .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
+        .btn-primary:hover{background:var(--accent2);border-color:var(--accent2);}
+
+        .logo-icon{width:40px;height:40px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;color:var(--accent-text);margin:0 auto 15px;}
+
+        #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 16px;box-shadow:0 4px 12px var(--shadow);font-family:'IBM Plex Mono',monospace;font-size:12px;max-width:300px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}
+        #toast.show{opacity:1;pointer-events:auto;}
+        #toast.error{border-left:3px solid var(--red-t);color:var(--red-t);}
+
+        /* ═══════════════════════════════════════════
+           EXTRAS PARA CENTRAR EL LOGIN
+        ═══════════════════════════════════════════ */
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 8px 32px var(--shadow);
+            text-align: center;
+        }
+        .login-box h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 5px;
+        }
+        .login-box p {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 25px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-box">
+            <div class="logo-icon">T</div>
+            <h1>Panel de Tesorería</h1>
+            <p>Ingresá tus credenciales para continuar</p>
+
+            <div class="input-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" placeholder="Ej: admin" autocomplete="off" autofocus>
+            </div>
+
+            <div class="input-group">
+                <label for="clave">Contraseña</label>
+                <input type="password" id="clave" placeholder="••••••••">
+            </div>
+
+            <button id="btn-login" class="btn btn-primary" style="margin-top: 10px;">Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const btnLogin = document.getElementById('btn-login');
+        const inputUser = document.getElementById('usuario');
+        const inputPass = document.getElementById('clave');
+        const toast = document.getElementById('toast');
+
+        // Permite loguearse apretando Enter en el teclado
+        window.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                btnLogin.click();
+            }
+        });
+
+        btnLogin.addEventListener('click', async () => {
+            const usuario = inputUser.value.trim();
+            const clave = inputPass.value.trim();
+
+            if (!usuario || !clave) {
+                mostrarToast('Completá usuario y contraseña.', 'error');
+                return;
+            }
+
+            // Cambiar estado del botón mientras carga
+            btnLogin.innerText = 'Verificando...';
+            btnLogin.disabled = true;
+
+            try {
+                // Hacemos el POST al servidor de Python
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usuario: usuario, clave: clave })
+                });
+
+                if (response.ok) {
+                    // Si el login fue exitoso, Python nos mandó la Cookie. 
+                    // Redirigimos al panel principal.
+                    window.location.href = '/';
+                } else {
+                    mostrarToast('Usuario o contraseña incorrectos.', 'error');
+                    btnLogin.innerText = 'Iniciar Sesión';
+                    btnLogin.disabled = false;
+                    inputPass.value = ''; // Borramos la clave por seguridad
+                    inputPass.focus();
+                }
+            } catch (error) {
+                mostrarToast('Error de conexión con el servidor.', 'error');
+                btnLogin.innerText = 'Iniciar Sesión';
+                btnLogin.disabled = false;
+            }
+        });
+
+        // Función para mostrar el cartelito abajo
+        function mostrarToast(mensaje, tipo) {
+            toast.textContent = mensaje;
+            toast.className = 'show ' + tipo;
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
