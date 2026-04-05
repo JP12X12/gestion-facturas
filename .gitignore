@@ -1,5 +1,5 @@
 # Bases de datos
-*.db
+bd/*.db
 
 # Archivos temporales de Python
 __pycache__/

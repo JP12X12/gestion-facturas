@@ -33,16 +33,26 @@ import socket
 HOST     = "0.0.0.0"
 PORT     = 5000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import os
 
-HTML_PANEL = os.path.join(BASE_DIR, "panel.html")
-HTML_FACT  = os.path.join(BASE_DIR, "index_facturas.html")
-HTML_TRANS = os.path.join(BASE_DIR, "index_transferencias.html")
-HTML_OPS   = os.path.join(BASE_DIR, "index_op.html")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DB_FACT  = os.path.join(BASE_DIR, "facturas.db")
-DB_TRANS = os.path.join(BASE_DIR, "transferencias.db")
-DB_OP    = os.path.join(BASE_DIR, "ordenes_pago.db")
+# Definimos las nuevas subcarpetas
+HTML_DIR = os.path.join(BASE_DIR, "htmls")
+BD_DIR   = os.path.join(BASE_DIR, "bd")
 
+# ── Rutas a los HTML ──
+HTML_PANEL = os.path.join(HTML_DIR, "panel.html")
+HTML_FACT  = os.path.join(HTML_DIR, "index_facturas.html")
+HTML_TRANS = os.path.join(HTML_DIR, "index_transferencias.html")
+HTML_OPS   = os.path.join(HTML_DIR, "index_op.html")
+HTML_LOGIN = os.path.join(HTML_DIR, "login.html")
+HTML_ADMIN = os.path.join(HTML_DIR, "admin_sesiones.html")
+
+# ── Rutas a las Bases de Datos ──
+DB_FACT  = os.path.join(BD_DIR, "facturas.db")
+DB_TRANS = os.path.join(BD_DIR, "transferencias.db")
+DB_OP    = os.path.join(BD_DIR, "ordenes_pago.db")
 
 # ══════════════════════════════════════════════════════════════════════
 # INIT / SETUP
@@ -1067,7 +1077,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         super().handle_error(request, client_address)
 
     def do_GET(self):
-    
         parsed = urllib.parse.urlparse(self.path)
         path   = parsed.path.rstrip("/") or "/"
         qs     = urllib.parse.parse_qs(parsed.query)
@@ -1087,10 +1096,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.end_headers()
                 return
         # ----- FIN DEL PEAJE -----
+
         # ── Páginas HTML ─────────────────────────────────────────────
         if path == "/login":
-            return send_html(self, os.path.join(BASE_DIR, "login.html")) # <--- AGREGA ESTO
-        # ── Panel de Admin (Solo entra el jefe) ──────────────────────
+            return send_html(self, HTML_LOGIN)
+            
+        if path == "/":
+            return send_html(self, HTML_PANEL)
+
         if path == "/admin":
             cookie_header = self.headers.get('Cookie')
             usuario_actual = auth.obtener_usuario_de_cookie(cookie_header)
@@ -1100,8 +1113,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Location", "/")
                 self.end_headers()
                 return
-            return send_html(self, os.path.join(BASE_DIR, "admin_sesiones.html"))
+            return send_html(self, HTML_ADMIN)
 
+        if path in ("/facturas", "/fact", "/facturas/", "/fact/"):
+            sync_transferencias_to_op()
+            return send_html(self, HTML_FACT)
+            
+        if path in ("/trans", "/transferencias", "/trans/", "/transferencias/"):
+            return send_html(self, HTML_TRANS)
+            
+        if path in ("/ops", "/cuentacorriente", "/cc"):
+            sync_transferencias_to_op()
+            return send_html(self, HTML_OPS)
+
+        # ── API Sesiones / Admin ──────────────────────────────────────
         if path == "/api/sesiones":
             cookie_header = self.headers.get('Cookie')
             if auth.obtener_usuario_de_cookie(cookie_header) != "admin":
@@ -1113,21 +1138,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             conteo = Counter(auth.sesiones_activas.values())
             data = [{"usuario": u, "conexiones": c} for u, c in conteo.items()]
             return send_json(self, data)
-        
-
-        if path == "/":
-            return send_html(self, HTML_PANEL)
-
-        if path == "/":
-            return send_html(self, HTML_PANEL)
-        if path in ("/facturas", "/fact", "/facturas/", "/fact/"):
-            sync_transferencias_to_op()
-            return send_html(self, HTML_FACT)
-        if path in ("/trans", "/transferencias", "/trans/", "/transferencias/"):
-            return send_html(self, HTML_TRANS)
-        if path in ("/ops", "/cuentacorriente", "/cc"):
-            sync_transferencias_to_op()
-            return send_html(self, HTML_OPS)
 
         # ── API Facturas ──────────────────────────────────────────────
         if path == "/facturas/api/stats":
@@ -1191,7 +1201,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return send_json(self, cuenta_corriente_prestador(q))
 
         self.send_error(404, "Not found")
-
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
         body           = self.rfile.read(content_length)

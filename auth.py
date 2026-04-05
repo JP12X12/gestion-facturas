@@ -3,9 +3,10 @@ import hashlib
 import secrets
 import os
 from http import cookies
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BD_DIR   = os.path.join(BASE_DIR, "bd")
 
-DB_USUARIOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "usuarios.db")
-
+DB_USUARIOS = os.path.join(BD_DIR, "usuarios.db")
 # Diccionario en memoria para guardar quién está conectado: { "token123": "juan", "token456": "pedro" }
 sesiones_activas = {}
 
