@@ -29,6 +29,7 @@ import time
 import random
 import urllib.parse
 import socket
+import mimetypes # <--- CLAVE PARA LEER PDFs
 
 HOST     = "0.0.0.0"
 PORT     = 5000
@@ -40,6 +41,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Definimos las nuevas subcarpetas
 HTML_DIR = os.path.join(BASE_DIR, "htmls")
 BD_DIR   = os.path.join(BASE_DIR, "bd")
+
+# 👇 ACÁ DEFINÍS LA RUTA A TU CARPETA DE COMPROBANTES 👇
+CARPETA_DOCUMENTOS = r"C:\Users\Juan\Desktop\Trabajo\Proyectos\Panel unificado\archivo\comprobantes" 
 
 # ── Rutas a los HTML ──
 HTML_PANEL = os.path.join(HTML_DIR, "panel.html")
@@ -711,10 +715,49 @@ def trans_query(params_qs):
     page = min(page, total_pages)
     offset = (page - 1) * page_size
 
+   # ... acá viene todo tu código de filtros y paginación ...
+    
     c.execute(f"SELECT * FROM transferencias {where} ORDER BY {order} LIMIT ? OFFSET ?",
               args + [page_size, offset])
     rows = [dict(r) for r in c.fetchall()]
     conn.close()
+
+   # 👇 --- NUEVA LÓGICA PARA DETECTAR PDFs FILA POR FILA --- 👇
+    archivos_pdf = []
+    if os.path.exists(CARPETA_DOCUMENTOS):
+        try:
+            # Solo traemos los que terminen en .pdf
+            archivos_pdf = [f for f in os.listdir(CARPETA_DOCUMENTOS) if f.lower().endswith('.pdf')]
+        except Exception:
+            pass
+
+    for r in rows:
+        r["has_pdf"] = False 
+        
+        numero = str(r.get("numero") or "")
+        nro_op = str(r.get("nro_orden_pago") or "")
+        
+        # 1. Le sacamos TODO lo que no sea número (ej: puntos de 2.140.439.412) y ceros a la izquierda
+        num_limpio = re.sub(r'\D', '', numero).lstrip("0")
+        op_limpia  = re.sub(r'\D', '', nro_op).lstrip("0")
+        
+        buscar_num = num_limpio if len(num_limpio) > 2 else None
+        buscar_op  = op_limpia if len(op_limpia) > 2 else None
+        
+        if buscar_num or buscar_op:
+            for archivo in archivos_pdf:
+                # 2. Extraemos TODOS los bloques numéricos separados del nombre del archivo
+                # Ej: "23211561734_DEBORA_2070309315.pdf" -> ['23211561734', '2070309315']
+                numeros_en_archivo = [n.lstrip("0") for n in re.findall(r'\d+', archivo)]
+                
+                # 3. Comparamos de forma EXACTA (evita que 561734 coincida con 23211561734)
+                if (buscar_num and buscar_num in numeros_en_archivo) or \
+                   (buscar_op and buscar_op in numeros_en_archivo):
+                    r["has_pdf"] = True
+                    break
+    # 👆 ------------------------------------------------------ 👆
+    
+    # 👆 ------------------------------------------------------ 👆
 
     return {"rows": rows, "total": total, "page": page,
             "total_pages": total_pages, "page_size": page_size}
@@ -739,50 +782,146 @@ def trans_csv(params_qs):
         w.writerow([r.get(k,"") for k,_ in cols])
     return buf.getvalue().encode("utf-8-sig")
 
+
 def _process_txt_trans(job_id, file_bytes):
     def upd(step, pct):
         with _jobs_lock:
             _jobs[job_id].update({"step": step, "pct": pct})
 
     try:
-        upd("Leyendo archivo…", 10)
+        upd("Leyendo archivo TXT…", 10)
         text = file_bytes.decode("utf-8", errors="ignore")
-        lines = text.strip().split("\n")
+        lines = text.split("\n")
 
         upd("Procesando líneas…", 50)
         records = []
-        for line in lines:
-            if not line.strip():
-                continue
-            parts = line.split("|")
-            if len(parts) >= 5:
-                records.append({
-                    "numero": parts[0].strip() if len(parts) > 0 else "",
-                    "fecha_solicitud": parts[1].strip() if len(parts) > 1 else "",
-                    "comunidad": parts[2].strip() if len(parts) > 2 else "",
-                    "nro_orden_pago": parts[3].strip() if len(parts) > 3 else "",
-                    "importe": parse_importe(parts[4].strip() if len(parts) > 4 else "0"),
-                })
+        
+        # Compilamos las "lupas" (Regex) para cazar los datos entre los espacios
+        re_fecha = re.compile(r'\d{2}/\d{2}/\d{4}')
+        re_tipo_op = re.compile(r'(?:(\d+)\s+)?(Proveedores|Depósitos Judiciales|Haberes|Honorarios)', re.IGNORECASE)
+        re_cuenta = re.compile(r'([A-Za-z0-9\.\s\-]+?)\s*-\s*C[AC]\s*-\s*[\$\w]+\s*-\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*-\s*(.*?)(?=\s{2,}|\s*\$|$)')
+        re_fin = re.compile(r'\$\s+([\d\.,]+)\s+([A-Za-z]+)\s*$')
+        re_fin2 = re.compile(r'([\d\.,]+)\s+([A-Za-z]+)\s*$')
+
+        for raw_line in lines:
+            line = raw_line.strip()
+            # Si el renglón no arranca con un número de transferencia, lo ignoramos
+            if not line or not re.match(r'^\d', line):
+                continue 
+            
+            parts = line.split()
+            numero = parts[0]
+            
+            m_fecha = re_fecha.search(line)
+            fecha = m_fecha.group(0) if m_fecha else ""
+            
+            m_tipo = re_tipo_op.search(line)
+            nro_op = m_tipo.group(1) if m_tipo and m_tipo.group(1) else ""
+            tipo_trans = m_tipo.group(2) if m_tipo else "Transferencia"
+            
+            # Buscamos los bloques gigantes de las cuentas
+            cuentas = re_cuenta.findall(line)
+            
+            cuenta_debito = ""
+            cuenta_credito = ""
+            cc_banco = ""
+            cc_cbu = ""
+            cc_cuit = ""
+            cc_nombre = ""
+            
+            if len(cuentas) >= 1:
+                cuenta_debito = " - ".join(cuentas[0])
+            if len(cuentas) >= 2:
+                cred = cuentas[1]
+                cc_banco = cred[0].strip()
+                cuenta_credito = cred[1].strip()
+                cc_cuit = cred[2].strip()
+                cc_cbu = cred[3].strip()
+                cc_nombre = cred[4].strip()
+                
+            m_fin = re_fin.search(line)
+            importe_str = "0"
+            estado = "Desconocido"
+            
+            if m_fin:
+                importe_str = m_fin.group(1)
+                estado = m_fin.group(2)
+            else:
+                m_fin2 = re_fin2.search(line)
+                if m_fin2:
+                    importe_str = m_fin2.group(1)
+                    estado = m_fin2.group(2)
+            
+            records.append({
+                "numero": numero,
+                "numero_red": parts[1] if len(parts) > 1 and parts[1].count(".") >= 1 else "",
+                "fecha_solicitud": fecha,
+                "comunidad": "",
+                "nro_orden_pago": nro_op,
+                "nro_pago": "",
+                "tipo_transferencia": tipo_trans,
+                "cuenta_debito": cuenta_debito,
+                "cuenta_credito": cuenta_credito,
+                "cc_banco": cc_banco,
+                "cc_cbu": cc_cbu,
+                "cc_cuit": cc_cuit,
+                "cc_nombre": cc_nombre,
+                "moneda": "$",
+                "importe": parse_importe(importe_str),
+                "estado": estado
+            })
 
         if not records:
-            raise Exception("No se encontraron registros válidos.")
+            raise Exception("No se detectaron registros válidos en el archivo TXT.")
+
+        upd(f"Buscando duplicados… ({len(records)} registros)", 70)
+        
+        # ----- Chequeo de base de datos para duplicados y actualizaciones -----
+        conn = sqlite3.connect(DB_TRANS)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("SELECT numero, estado, importe FROM transferencias")
+        existing_map = {r["numero"]: dict(r) for r in c.fetchall()}
+        conn.close()
+
+        new_recs = []
+        dup_recs = []
+
+        for r in records:
+            if r["numero"] in existing_map:
+                dup_recs.append({"incoming": r, "existing": existing_map[r["numero"]]})
+            else:
+                new_recs.append(r)
 
         token = _make_id()
         with _pending_lock:
-            _pending[token] = {"new": records, "dupes": [], "type": "trans"}
+            _pending[token] = {"new": new_recs, "dupes": dup_recs, "type": "trans"}
 
         upd("Listo", 100)
         with _jobs_lock:
             _jobs[job_id].update({
                 "status": "done",
                 "result": {
-                    "nuevos": len(records),
-                    "duplicados": 0,
+                    "nuevos": len(new_recs),
+                    "duplicados": len(dup_recs),
                     "total": len(records),
                     "token": token,
+                    "dupes_preview": [
+                        {
+                            "numero": d["incoming"]["numero"],
+                            "nro_op": d["incoming"]["nro_orden_pago"],
+                            "nombre": d["incoming"]["cc_nombre"],
+                            "estado_old": d["existing"].get("estado", ""),
+                            "estado_new": d["incoming"]["estado"],
+                            "importe_old": d["existing"].get("importe", ""),
+                            "importe_new": d["incoming"]["importe"]
+                        }
+                        for d in dup_recs[:50]
+                    ]
                 }
             })
     except Exception as e:
+        import traceback; traceback.print_exc()
         with _jobs_lock:
             _jobs[job_id].update({
                 "status": "error",
@@ -795,28 +934,65 @@ def confirm_trans(token, update_dupes=False):
     if not data:
         return 0, 0, 0, "Token inválido."
 
-    records = data.get("new", [])
+    new_recs = data.get("new", [])
+    dup_recs = data.get("dupes", [])
+    
     conn = sqlite3.connect(DB_TRANS)
     ins, upd, skp = 0, 0, 0
 
-    for r in records:
+    # Función auxiliar para armar la tupla con las 16 columnas
+    def armar_tupla(r):
+        return (
+            r["numero"], r["numero_red"], r["fecha_solicitud"], r["comunidad"],
+            r["nro_orden_pago"], r["nro_pago"], r["tipo_transferencia"],
+            r["cuenta_debito"], r["cuenta_credito"], r["cc_banco"],
+            r["cc_cbu"], r["cc_cuit"], r["cc_nombre"], r["moneda"],
+            r["importe"], r["estado"]
+        )
+
+    query_insert = """
+        INSERT INTO transferencias
+        (numero, numero_red, fecha_solicitud, comunidad, nro_orden_pago, nro_pago,
+         tipo_transferencia, cuenta_debito, cuenta_credito, cc_banco, cc_cbu,
+         cc_cuit, cc_nombre, moneda, importe, estado)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
+
+    for r in new_recs:
         try:
-            conn.execute("""
-                INSERT INTO transferencias
-                (numero, fecha_solicitud, comunidad, nro_orden_pago, importe)
-                VALUES (?, ?, ?, ?, ?)
-            """, (
-                r["numero"], r["fecha_solicitud"], r["comunidad"],
-                r["nro_orden_pago"], r["importe"]
-            ))
+            conn.execute(query_insert, armar_tupla(r))
             ins += 1
         except Exception:
             skp += 1
+            
+    if update_dupes:
+        query_update = """
+            UPDATE transferencias
+            SET numero_red=?, fecha_solicitud=?, comunidad=?, nro_orden_pago=?, nro_pago=?,
+                tipo_transferencia=?, cuenta_debito=?, cuenta_credito=?, cc_banco=?, cc_cbu=?,
+                cc_cuit=?, cc_nombre=?, moneda=?, importe=?, estado=?
+            WHERE numero=?
+        """
+        for d in dup_recs:
+            r = d["incoming"]
+            try:
+                conn.execute(query_update, (
+                    r["numero_red"], r["fecha_solicitud"], r["comunidad"],
+                    r["nro_orden_pago"], r["nro_pago"], r["tipo_transferencia"],
+                    r["cuenta_debito"], r["cuenta_credito"], r["cc_banco"],
+                    r["cc_cbu"], r["cc_cuit"], r["cc_nombre"], r["moneda"],
+                    r["importe"], r["estado"], r["numero"] # El numero va al final para el WHERE
+                ))
+                upd += 1
+            except Exception:
+                skp += 1
+    else:
+        skp += len(dup_recs)
 
     conn.commit()
     conn.close()
-    msg = f"Insertados: {ins}, Omitidos: {skp}"
-    return ins, 0, skp, msg
+    msg = f"Insertados: {ins}, Actualizados: {upd}, Omitidos: {skp}"
+    return ins, upd, skp, msg
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -1188,8 +1364,53 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if job["status"] == "done":   out["result"] = job.get("result", {})
             if job["status"] == "error":  out["error"]  = job.get("error", "Error")
             return send_json(self, out)
+        # ── API Documentos (Comprobantes PDF) ─────────────────────────
         if path == "/trans/api/pdf-status":
-            return send_json(self, {"total": 0, "rows": [], "status": "ok"})
+            # Esto le avisa al HTML si la carpeta existe y cuántos PDFs hay
+            if os.path.exists(CARPETA_DOCUMENTOS):
+                try:
+                    archivos = [f for f in os.listdir(CARPETA_DOCUMENTOS) if f.lower().endswith('.pdf')]
+                    return send_json(self, {"exists": True, "count": len(archivos), "dir": CARPETA_DOCUMENTOS})
+                except Exception:
+                    return send_json(self, {"exists": True, "count": 0, "dir": CARPETA_DOCUMENTOS})
+            else:
+                return send_json(self, {"exists": False, "count": 0, "dir": CARPETA_DOCUMENTOS})
+        if path == "/trans/api/pdf":
+            numero = qs.get("numero", [""])[0]
+            nro_op = qs.get("nro_op", [""])[0]
+            
+            num_limpio = re.sub(r'\D', '', numero).lstrip("0")
+            op_limpia  = re.sub(r'\D', '', nro_op).lstrip("0")
+            
+            buscar_num = num_limpio if len(num_limpio) > 2 else None
+            buscar_op  = op_limpia if len(op_limpia) > 2 else None
+            
+            archivo_encontrado = None
+            if os.path.exists(CARPETA_DOCUMENTOS):
+                for f in os.listdir(CARPETA_DOCUMENTOS):
+                    if not f.lower().endswith('.pdf'):
+                        continue
+                    
+                    numeros_en_archivo = [n.lstrip("0") for n in re.findall(r'\d+', f)]
+                    
+                    if (buscar_num and buscar_num in numeros_en_archivo) or \
+                       (buscar_op and buscar_op in numeros_en_archivo):
+                        archivo_encontrado = os.path.join(CARPETA_DOCUMENTOS, f)
+                        break
+            
+            if archivo_encontrado:
+                with open(archivo_encontrado, 'rb') as f:
+                    contenido = f.read()
+                tipo_mime, _ = mimetypes.guess_type(archivo_encontrado)
+                self.send_response(200)
+                self.send_header("Content-Type", tipo_mime or "application/pdf")
+                self.send_header("Content-Length", len(contenido))
+                self.send_header("Content-Disposition", f'inline; filename="{os.path.basename(archivo_encontrado)}"')
+                self.end_headers()
+                self.wfile.write(contenido)
+            else:
+                self.send_error(404, "Comprobante no encontrado en la carpeta")
+            return
 
         # ── API Cuenta Corriente / OPs ────────────────────────────────
         if path == "/ops/api/data":
@@ -1349,6 +1570,8 @@ if __name__ == "__main__":
             print(f"  Facturas:       http://{HOST}:{port}/facturas")
             print(f"  Transferencias: http://{HOST}:{port}/trans")
             print(f"  Cta Corriente:  http://{HOST}:{port}/ops")
+            print(f"  pagina:         https://testeojp.online/login ")
+            print(f"  Usuario admin:  https://testeojp.online/admin")
             print(f"  Ctrl+C para detener.")
             print(f"{'='*55}\n")
             httpd.serve_forever()
