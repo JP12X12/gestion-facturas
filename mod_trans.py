@@ -66,15 +66,19 @@ def trans_query(params_qs):
     debito      = params_qs.get("debito",  [""])[0]
     estado      = params_qs.get("estado",  [""])[0]
 
+    # Convertimos la fecha que ingresa el usuario "DD/MM/YYYY" a "YYYYMMDD"
     def ymd(d):
         p = d.split("/")
         return (p[2]+p[1]+p[0]) if len(p)==3 else d
 
+    # 🚀 LA MAGIA: Le enseñamos a SQLite a leer "DD/MM/YYYY" como "YYYYMMDD"
+    fecha_sql = "substr(fecha_solicitud,7,4)||substr(fecha_solicitud,4,2)||substr(fecha_solicitud,1,2)"
+
     if fecha_desde:
-        where += " AND replace(substr(fecha_solicitud,1,10),'-','') >= ?"
+        where += f" AND {fecha_sql} >= ?"
         args.append(ymd(fecha_desde))
     if fecha_hasta:
-        where += " AND replace(substr(fecha_solicitud,1,10),'-','') <= ?"
+        where += f" AND {fecha_sql} <= ?"
         args.append(ymd(fecha_hasta))
     if nro_op:
         where += " AND nro_orden_pago LIKE ?"
@@ -96,7 +100,11 @@ def trans_query(params_qs):
         where += " AND estado LIKE ?"
         args.append(f"%{estado}%")
 
-    order = "fecha_solicitud DESC" if sort != "fecha_asc" else "fecha_solicitud ASC"
+    # 🚀 ORDENAMIENTO CORRECTO POR FECHA REAL
+    if sort == "fecha_asc":
+        order = f"{fecha_sql} ASC, id ASC"
+    else:
+        order = f"{fecha_sql} DESC, id DESC"
 
     conn = sqlite3.connect(config.DB_TRANS)
     conn.row_factory = sqlite3.Row
@@ -146,7 +154,11 @@ def trans_query(params_qs):
 def trans_csv(params_qs):
     conn = sqlite3.connect(config.DB_TRANS)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute("SELECT * FROM transferencias ORDER BY fecha_solicitud DESC").fetchall()
+    
+    # También arreglamos la descarga del CSV para que salga ordenado perfecto
+    fecha_sql = "substr(fecha_solicitud,7,4)||substr(fecha_solicitud,4,2)||substr(fecha_solicitud,1,2)"
+    
+    rows = conn.execute(f"SELECT * FROM transferencias ORDER BY {fecha_sql} DESC").fetchall()
     rows = [dict(r) for r in rows]
     conn.close()
 
@@ -162,7 +174,6 @@ def trans_csv(params_qs):
     for r in rows:
         w.writerow([r.get(k,"") for k,_ in cols])
     return buf.getvalue().encode("utf-8-sig")
-
 def _process_txt_trans(job_id, file_bytes):
     def upd(step, pct):
         with _jobs_lock:

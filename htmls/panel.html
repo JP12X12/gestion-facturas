@@ -36,62 +36,60 @@ background-image:radial-gradient(ellipse at 20% 30%,rgba(59,130,246,.06) 0%,tran
 .open-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:9px;border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:var(--c);color:#fff;transition:filter .15s,opacity .15s;text-decoration:none;}
 .open-btn:hover{filter:brightness(1.15);}
 .open-btn.waiting{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border2);cursor:not-allowed;pointer-events:none;}
-.port-tag{position:absolute;top:18px;right:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 7px;}
 footer{margin-top:52px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text-dim);text-align:center;line-height:1.8;}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-badge"><span class="badge-dot"></span>Sistema local activo</div>
+  <div class="header-badge"><span class="badge-dot"></span>Sistema unificado activo</div>
   <h1>Panel de<br><em>Herramientas</em></h1>
   <p>// Seleccioná una app para abrirla en una pestaña nueva</p>
 </div>
 
 <div class="cards">
 
-  <div class="card" style="--c:#3b82f6" onclick="abrirApp(8080,'btn-trans')">
+  <div class="card" style="--c:#3b82f6" onclick="abrirApp('btn-trans')">
     <div class="card-accent"></div>
-    <div class="port-tag">:8080</div>
     <div class="card-inner">
       <div class="card-icon">🏦</div>
-      <div class="card-name">BD Transferencias</div>
-      <div class="card-desc">Gestión de transferencias bancarias.<br>Filtros, comprobantes PDF y exportación CSV.</div>
+      <div class="card-name">Transferencias</div>
+      <div class="card-desc">Gestión de transferencias bancarias.<br>Filtros, comprobantes PDF y CSV.</div>
       <div class="card-footer">
-        <div class="status offline" id="status-8080">
+        <div class="status offline" id="status-trans">
           <span class="status-dot"></span><span class="status-label">Verificando...</span>
         </div>
-        <a id="btn-trans" class="open-btn waiting" href="/trans" target="_blank">Abrir →</a>
+        <a id="btn-trans" class="open-btn waiting" href="/trans" target="_blank" onclick="event.stopPropagation()">Abrir →</a>
       </div>
     </div>
   </div>
 
-  <div class="card" style="--c:#8b5cf6" onclick="abrirApp(8081,'btn-fact')">
+  <div class="card" style="--c:#8b5cf6" onclick="abrirApp('btn-fact')">
     <div class="card-accent"></div>
-    <div class="port-tag">:8081</div>
     <div class="card-inner">
       <div class="card-icon">🧾</div>
-      <div class="card-name">BD Facturas</div>
+      <div class="card-name">Facturas</div>
       <div class="card-desc">Visualización y gestión de facturas.<br>Importación desde Excel.</div>
-        <div class="status offline" id="status-8081">
+      <div class="card-footer">
+        <div class="status offline" id="status-fact">
           <span class="status-dot"></span><span class="status-label">Verificando...</span>
         </div>
-        <a id="btn-fact" class="open-btn waiting" href="/facturas" target="_blank">Abrir →</a>
+        <a id="btn-fact" class="open-btn waiting" href="/facturas" target="_blank" onclick="event.stopPropagation()">Abrir →</a>
       </div>
     </div>
   </div>
 
-  <div class="card" style="--c:#a855f7" onclick="abrirApp(0,'btn-ops')">
+  <div class="card" style="--c:#a855f7" onclick="abrirApp('btn-ops')">
     <div class="card-accent"></div>
     <div class="card-inner">
       <div class="card-icon">⚖️</div>
-      <div class="card-name">Resumen Cuenta Corriente</div>
-      <div class="card-desc">Vista unificada de facturas y pagos por prestador. <br></div>
+      <div class="card-name">Cuenta Corriente</div>
+      <div class="card-desc">Vista unificada de facturas y pagos.<br>Control de saldos por prestador.</div>
       <div class="card-footer">
         <div class="status offline" id="status-ops">
           <span class="status-dot"></span><span class="status-label">Verificando...</span>
         </div>
-        <a id="btn-ops" class="open-btn waiting" href="/ops" target="_blank">Abrir →</a>
+        <a id="btn-ops" class="open-btn waiting" href="/ops" target="_blank" onclick="event.stopPropagation()">Abrir →</a>
       </div>
     </div>
   </div>
@@ -99,20 +97,22 @@ footer{margin-top:52px;font-size:10px;font-family:'IBM Plex Mono',monospace;colo
 </div>
 
 <footer>
-  Todos los servidores corren localmente en tu máquina<br>
-  Cerrá la ventana del .bat para detenerlos
+  Sistema unificado corriendo localmente<br>
+  Cerrá la ventana de la consola para detenerlo
 </footer>
 
 <script>
+// El panel ahora apunta todo al mismo servidor, solo cambian las rutas
 const apps = [
-  { endpoint: "/ops/api/stats",   statusId: "status-ops", btnId: "btn-ops",  href: "/ops" },
-  { endpoint: "/trans/api/stats",    statusId: "status-8080", btnId: "btn-trans", href: "/trans"    },
-  { endpoint: "/facturas/api/stats", statusId: "status-8081", btnId: "btn-fact",  href: "/facturas" },
+  { endpoint: "/ops/api/stats",      statusId: "status-ops",   btnId: "btn-ops",   href: "/ops" },
+  { endpoint: "/trans/api/stats",    statusId: "status-trans", btnId: "btn-trans", href: "/trans" },
+  { endpoint: "/facturas/api/stats", statusId: "status-fact",  btnId: "btn-fact",  href: "/facturas" },
 ];
 
-function abrirApp(port, btnId) {
-  if (document.getElementById(btnId).classList.contains("waiting")) return;
-  window.open(apps.find(a=>a.btnId===btnId).href, "_blank");
+function abrirApp(btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn.classList.contains("waiting")) return;
+  window.open(btn.href, "_blank");
 }
 
 async function checkApp(app) {
@@ -123,6 +123,7 @@ async function checkApp(app) {
     const tid  = setTimeout(()=>ctrl.abort(), 3000);
     const res  = await fetch(app.endpoint, {signal:ctrl.signal});
     clearTimeout(tid);
+    
     if (res.ok) {
       const data = await res.json();
       st.className = "status online";
@@ -130,7 +131,9 @@ async function checkApp(app) {
         data.total !== undefined ? `${data.total} registros` : "En línea";
       btn.classList.remove("waiting");
       btn.href = app.href;
-    } else { throw new Error(); }
+    } else { 
+      throw new Error(); 
+    }
   } catch {
     st.className = "status offline";
     st.querySelector(".status-label").textContent = "Offline";

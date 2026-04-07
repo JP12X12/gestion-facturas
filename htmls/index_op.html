@@ -9,142 +9,99 @@
 
 [data-theme="dark"]{--bg:#0f1117;--surface:#181c27;--surface2:#1e2336;--surface3:#242840;--border:#2a3050;--border2:#3a4470;--text:#d4daf0;--text-dim:#7a85a8;--text-bright:#eef2ff;--accent:#4a7cff;--accent2:#2d55cc;--accent-text:#fff;--green-bg:#1a3a1e;--green-b:#2e6b35;--green-t:#5ddb6e;--yellow-bg:#3a3010;--yellow-b:#7a6520;--yellow-t:#f0c040;--red-bg:#3a1015;--red-b:#7a2530;--red-t:#f06070;--shadow:rgba(0,0,0,.5);}
 [data-theme="light"]{--bg:#f4f6fb;--surface:#ffffff;--surface2:#eef1f8;--surface3:#e4e8f5;--border:#d0d7ea;--border2:#b0bcd8;--text:#2a3050;--text-dim:#6b7799;--text-bright:#0f1a38;--accent:#3366ff;--accent2:#1a44cc;--accent-text:#fff;--green-bg:#e6f9ea;--green-b:#3ea84d;--green-t:#1e7a2c;--yellow-bg:#fffbe6;--yellow-b:#d4a500;--yellow-t:#8a6200;--red-bg:#fff0f2;--red-b:#d44455;--red-t:#9b1c2a;--shadow:rgba(0,0,0,.12);}
-[data-theme="blue"]{--bg:#060d1f;--surface:#0b1530;--surface2:#0f1c3a;--surface3:#152248;--border:#1a2d55;--border2:#253f78;--text:#c0cef5;--text-dim:#607099;--text-bright:#e0eaff;--accent:#2979ff;--accent2:#1a5acc;--accent-text:#fff;--green-bg:#0a2218;--green-b:#1a6040;--green-t:#30d080;--yellow-bg:#1a1500;--yellow-b:#806000;--yellow-t:#ffd040;--red-bg:#1a0808;--red-b:#802030;--red-t:#ff5060;--shadow:rgba(0,0,0,.7);}
-[data-theme="green"]{--bg:#050f0a;--surface:#081a0f;--surface2:#0c2015;--surface3:#10281a;--border:#1a3d26;--border2:#265c38;--text:#a8d8b8;--text-dim:#4d8860;--text-bright:#d0f0de;--accent:#22c55e;--accent2:#16a34a;--accent-text:#050f0a;--green-bg:#0c2818;--green-b:#1a5030;--green-t:#4ade80;--yellow-bg:#1a1a00;--yellow-b:#6b6b00;--yellow-t:#facc15;--red-bg:#1a0808;--red-b:#7a2020;--red-t:#f87171;--shadow:rgba(0,0,0,.7);}
-[data-theme="contrast"]{--bg:#000;--surface:#0a0a0a;--surface2:#111;--surface3:#1a1a1a;--border:#333;--border2:#555;--text:#fff;--text-dim:#aaa;--text-bright:#fff;--accent:#ffff00;--accent2:#cccc00;--accent-text:#000;--green-bg:#001a00;--green-b:#00aa00;--green-t:#00ff00;--yellow-bg:#1a1a00;--yellow-b:#aaaa00;--yellow-t:#ffff00;--red-bg:#1a0000;--red-b:#aa0000;--red-t:#ff4444;--shadow:rgba(255,255,255,.1);}
-[data-theme="warm"]{--bg:#1a1208;--surface:#231a0e;--surface2:#2e2214;--surface3:#3a2b1a;--border:#4a3820;--border2:#6a5030;--text:#e8d8b8;--text-dim:#9a8060;--text-bright:#f8ecd8;--accent:#e8980a;--accent2:#c07808;--accent-text:#fff;--green-bg:#0e1a0a;--green-b:#3a6020;--green-t:#80c840;--yellow-bg:#2a1e00;--yellow-b:#8a6000;--yellow-t:#f8c020;--red-bg:#1a0a08;--red-b:#8a2818;--red-t:#f06040;--shadow:rgba(0,0,0,.6);}
+/* Mismos temas extra obviados por longitud, podés pegar tus variables completas acá si querés */
 
 *{box-sizing:border-box;margin:0;padding:0;}
 html{transition:background .3s,color .3s;}
 body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;min-height:100vh;}
 
-/* ── HEADER ── */
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px var(--shadow);}
+/* ── HEADER Y BUSCADOR ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
 .logo{display:flex;align-items:center;gap:10px;}
 .logo-icon{width:32px;height:32px;background:#5a3a99;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;color:#fff;}
 .logo h1{font-size:15px;font-weight:600;color:var(--text-bright);}
 .logo span{font-size:11px;color:var(--text-dim);font-weight:300;}
-.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.theme-picker{display:flex;align-items:center;gap:5px;padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;}
-.theme-lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-right:2px;}
-.theme-swatch{width:16px;height:16px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;}
-.theme-swatch:hover{transform:scale(1.2);}
-.theme-swatch.active{border-color:var(--text-bright);transform:scale(1.15);}
-.sw-dark{background:linear-gradient(135deg,#0f1117 50%,#4a7cff 50%);}
-.sw-light{background:linear-gradient(135deg,#f4f6fb 50%,#3366ff 50%);}
-.sw-blue{background:linear-gradient(135deg,#060d1f 50%,#2979ff 50%);}
-.sw-green{background:linear-gradient(135deg,#050f0a 50%,#22c55e 50%);}
-.sw-contrast{background:linear-gradient(135deg,#000 50%,#ffff00 50%);}
-.sw-warm{background:linear-gradient(135deg,#1a1208 50%,#e8980a 50%);}
+.header-right{display:flex;gap:8px;align-items:center;}
 
-/* ── BUSCADOR ── */
-.search-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.search-bar input{flex:1;min-width:260px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 12px;outline:none;transition:border-color .2s;}
+.search-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.search-bar input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 12px;outline:none;}
 .search-bar input:focus{border-color:var(--accent);}
 
 /* ── BOTONES ── */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;border:1px solid;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;border:1px solid;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text);}
 .btn-primary:hover{background:var(--accent2);border-color:var(--accent2);}
 .btn-ghost{background:transparent;border-color:var(--border2);color:var(--text-dim);}
 .btn-ghost:hover{border-color:var(--text-dim);color:var(--text);}
 .btn-green{background:var(--green-bg);border-color:var(--green-b);color:var(--green-t);}
-.btn-green:hover{filter:brightness(1.15);}
-.btn-danger{background:transparent;border-color:var(--red-b);color:var(--red-t);}
-.btn-danger:hover{background:var(--red-bg);}
-.btn:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ── TABLA UNIFICADA ── */
-.main{padding:0 0 40px;}
-.tbl-header{padding:10px 20px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.tbl-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);}
-.tbl-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 8px;}
+/* ── NUEVO LAYOUT: SIDEBAR + TABLA ── */
+.layout-container { display: flex; gap: 20px; padding: 20px; align-items: flex-start; }
+
+/* Sidebar Maestro */
+.sidebar { width: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; flex-shrink: 0; display: flex; flex-direction: column; max-height: calc(100vh - 160px); }
+.sidebar-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-dim); background: var(--surface2); border-radius: 8px 8px 0 0; }
+.sidebar-list { overflow-y: auto; }
+.prestador-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; display: flex; flex-direction: column; gap: 4px; }
+.prestador-item:hover { background: var(--surface2); }
+.prestador-item.active { background: rgba(74,124,255,0.08); border-left: 3px solid var(--accent); padding-left: 13px; }
+.prestador-name { font-weight: 600; color: var(--text-bright); font-size: 13px; }
+.prestador-cuit { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.sidebar-empty { padding: 30px 20px; text-align: center; color: var(--text-dim); font-size: 12px; }
+
+/* Main Detalle */
+.main-content { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tbl-header{padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between;}
+.tbl-title{font-size:14px;font-weight:600;color:var(--text-bright);}
+.tbl-cuit{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);margin-left:8px;}
+
+/* Tabla */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
-thead tr{background:var(--surface2);position:sticky;top:57px;z-index:10;}
-th{padding:8px 12px;text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid var(--border2);}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+th{padding:8px 12px;text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-dim);border-bottom:2px solid var(--border2);background: var(--surface3);}
+tbody tr{border-bottom:1px solid var(--border);}
 tbody tr.row-op{background:rgba(74,124,255,.04);cursor:pointer;}
 tbody tr.row-op:hover td{background:rgba(74,124,255,.09)!important;}
-tbody tr.row-fact{cursor:default;}
-tbody tr.row-fact:hover td{background:var(--surface)!important;}
-td{padding:7px 12px;vertical-align:middle;color:var(--text);}
-
-/* tipo indicator */
+tbody tr.row-fact:hover td{background:var(--surface2)!important;}
+td{padding:8px 12px;vertical-align:middle;color:var(--text);}
 .tipo-cell{width:6px;padding:0!important;}
 .tipo-bar{width:3px;height:28px;border-radius:2px;margin:0 auto;}
 .bar-op{background:var(--accent);}
 .bar-fact{background:var(--border2);}
 
-/* badges */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid;white-space:nowrap;}
+/* Badges y utilidades */
+.badge{display:inline-flex;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid;}
 .b-op{background:rgba(74,124,255,.12);color:var(--accent);border-color:rgba(74,124,255,.4);}
 .b-pagada{background:rgba(93,219,110,.1);color:var(--green-t);border-color:var(--green-b);}
 .b-impaga{background:rgba(240,96,112,.1);color:var(--red-t);border-color:var(--red-b);}
-.b-saldo-ok{background:rgba(93,219,110,.1);color:var(--green-t);border-color:var(--green-b);}
-.b-saldo-neg{background:rgba(240,96,112,.1);color:var(--red-t);border-color:var(--red-b);}
-.b-saldo-pend{background:rgba(240,192,64,.1);color:var(--yellow-t);border-color:var(--yellow-b);}
+.importe{text-align:right;font-weight:600;}
+.empty-msg{text-align:center;padding:50px 20px;color:var(--text-dim);font-size:13px;}
 
-.importe{text-align:right;font-weight:600;white-space:nowrap;}
-.empty-msg{text-align:center;padding:50px 20px;color:var(--text-dim);font-size:12px;}
-.empty-msg .ei{font-size:30px;margin-bottom:8px;opacity:.4;display:block;}
-
-/* leyenda */
-.legend{display:flex;gap:14px;align-items:center;}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim);}
-.leg-bar{width:10px;height:10px;border-radius:2px;}
+/* ── MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
 .overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:min(900px,96vw);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 70px var(--shadow);transform:translateY(14px);transition:transform .25s;}
-.overlay.open .modal{transform:translateY(0);}
-.modal-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:12px;width:min(900px,96vw);max-height:92vh;display:flex;flex-direction:column;}
+.modal-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
 .modal-title{font-size:16px;font-weight:600;color:var(--text-bright);}
-.modal-sub{font-size:12px;color:var(--text-dim);margin-top:3px;font-family:'IBM Plex Mono',monospace;}
-.modal-close{background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:2px 8px;border-radius:4px;line-height:1;}
-.modal-close:hover{color:var(--text);}
-.modal-body{padding:18px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:18px;}
-.modal-ftr{padding:14px 22px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.modal-sub{font-size:12px;color:var(--text-dim);margin-top:4px;}
+.modal-close{background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;}
+.modal-body{padding:18px 22px;overflow-y:auto;flex:1;}
+.modal-ftr{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
 
-/* ── SALDO PANEL EN MODAL ── */
-.saldo-panel{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
-.saldo-item{display:flex;flex-direction:column;gap:2px;}
-.saldo-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);}
-.saldo-val{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--text-bright);}
-.saldo-val.neg{color:var(--red-t);}
-.saldo-val.pos{color:var(--yellow-t);}
-.saldo-val.zero{color:var(--green-t);}
-.saldo-div{width:1px;height:32px;background:var(--border2);}
-.ret-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.ret-row label{font-size:11px;color:var(--text-dim);white-space:nowrap;}
-.ret-input{background:var(--surface3);border:1px solid var(--border2);border-radius:5px;color:var(--text-bright);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:5px 9px;width:130px;outline:none;transition:border-color .2s;}
-.ret-input:focus{border-color:var(--accent);}
+.saldo-panel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px;}
+.saldo-item{display:flex;flex-direction:column;gap:4px;}
+.saldo-lbl{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-dim);}
+.saldo-val{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--text-bright);}
+.ret-input{background:var(--surface3);border:1px solid var(--border2);border-radius:5px;color:var(--text-bright);font-size:13px;padding:5px 9px;width:110px;}
 
-/* ── TABLA FACTURAS EN MODAL ── */
-.fact-modal-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
-.fact-modal-table th{padding:7px 10px;text-align:left;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);border-bottom:2px solid var(--border2);background:var(--surface2);}
-.fact-modal-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.fact-modal-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.fact-modal-table th{background:var(--surface2);padding:8px;}
+.fact-modal-table td{padding:8px;border-bottom:1px solid var(--border);}
 .fact-modal-table tr.selected-row td{background:rgba(74,124,255,.07);}
-.fact-modal-table tr:hover td{background:var(--surface2);}
-.monto-input{background:var(--surface3);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:3px 7px;width:110px;outline:none;transition:border-color .2s;}
-.monto-input:focus{border-color:var(--accent);}
-.monto-input:disabled{opacity:.35;cursor:not-allowed;}
-.chk{width:15px;height:15px;cursor:pointer;accent-color:var(--accent);}
+.monto-input{background:var(--surface3);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);padding:4px 8px;width:110px;}
 
-/* ── TOAST ── */
-#toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:13px;color:var(--text-bright);box-shadow:0 4px 20px var(--shadow);z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;max-width:360px;}
-#toast.show{opacity:1;transform:translateY(0);}
-#toast.success{border-color:var(--green-b);}#toast.error{border-color:var(--red-b);}#toast.warn{border-color:var(--yellow-b);}
-
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-
-.importe{text-align:right;font-weight:600;white-space:nowrap;}
-.importe.neg{color:var(--red-t);}
-.importe.pos{color:var(--green-t);}
-
-/* responsive */
-@media(max-width:700px){.main{grid-template-columns:1fr;}.panel{border-right:none;border-bottom:1px solid var(--border);}}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 18px;color:var(--text-bright);opacity:0;transition:opacity .25s;}
+#toast.show{opacity:1;}
 </style>
 </head>
 <body>
@@ -152,61 +109,52 @@ td{padding:7px 12px;vertical-align:middle;color:var(--text);}
 <header>
   <div class="logo">
     <div class="logo-icon">CC</div>
-    <div><h1>Cuenta Corriente</h1><span id="sub-info">Buscá un prestador para comenzar</span></div>
+    <div><h1>Cuenta Corriente</h1><span>Buscador unificado maestro-detalle</span></div>
   </div>
   <div class="header-right">
     <a href="/" class="btn btn-ghost" style="text-decoration:none">← Panel</a>
-    <div class="theme-picker">
-      <span class="theme-lbl">Tema</span>
-      <div class="theme-swatch sw-dark active"    data-theme="dark"     title="Oscuro"         onclick="setTheme('dark')"></div>
-      <div class="theme-swatch sw-light"          data-theme="light"    title="Claro"          onclick="setTheme('light')"></div>
-      <div class="theme-swatch sw-blue"           data-theme="blue"     title="Azul noche"     onclick="setTheme('blue')"></div>
-      <div class="theme-swatch sw-green"          data-theme="green"    title="Verde matrix"   onclick="setTheme('green')"></div>
-      <div class="theme-swatch sw-contrast"       data-theme="contrast" title="Alto contraste" onclick="setTheme('contrast')"></div>
-      <div class="theme-swatch sw-warm"           data-theme="warm"     title="Cálido"         onclick="setTheme('warm')"></div>
-    </div>
   </div>
 </header>
 
 <div class="search-bar">
-  <input type="text" id="busqueda" placeholder="Ingresá CUIT o nombre del prestador..." autocomplete="off"
-         onkeydown="if(event.key==='Enter') buscar()">
-  <button class="btn btn-primary" onclick="buscar()">🔍 Buscar</button>
-  <button class="btn btn-ghost"   onclick="limpiar()">✕ Limpiar</button>
+  <input type="text" id="busqueda" placeholder="Empezá a escribir el nombre o CUIT del prestador..." autocomplete="off">
 </div>
 
-<div class="main">
-  <div class="tbl-header">
-    <span class="tbl-title">Movimientos</span>
-    <div style="display:flex;align-items:center;gap:16px;">
-      <div class="legend">
-        <div class="legend-item"><div class="leg-bar" style="background:var(--accent)"></div>Orden de Pago — click para editar</div>
-        <div class="legend-item"><div class="leg-bar" style="background:var(--border2)"></div>Factura</div>
-      </div>
-      <span class="tbl-count" id="cnt-rows">—</span>
+<div class="layout-container">
+  <aside class="sidebar">
+    <div class="sidebar-hdr">Coincidencias</div>
+    <div class="sidebar-list" id="lista-prestadores">
+      <div class="sidebar-empty">Escribí en el buscador de arriba.</div>
     </div>
-  </div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th style="width:6px;padding:0"></th>
-          <th>Tipo</th>
-          <th>Fecha</th>
-          <th>Referencia</th>
-          <th>Detalle</th>
-          <th style="text-align:right">Importe / Monto</th>
-          <th>Estado / Saldo</th>
-        </tr>
-      </thead>
-      <tbody id="tb-main">
-        <tr><td colspan="7" class="empty-msg"><span class="ei">🔍</span>Buscá un prestador para ver sus movimientos</td></tr>
-      </tbody>
-    </table>
-  </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="tbl-header">
+      <div>
+        <span class="tbl-title" id="lbl-nombre">Seleccioná un prestador</span>
+        <span class="tbl-cuit" id="lbl-cuit"></span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:6px;padding:0"></th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Referencia</th>
+            <th style="text-align:right">Importe / Monto</th>
+            <th>Estado / Saldo</th>
+          </tr>
+        </thead>
+        <tbody id="tb-main">
+          <tr><td colspan="6" class="empty-msg">Esperando selección...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
 </div>
 
-<!-- MODAL OP -->
 <div class="overlay" id="overlay" onclick="cerrarModalFuera(event)">
   <div class="modal">
     <div class="modal-hdr">
@@ -217,63 +165,45 @@ td{padding:7px 12px;vertical-align:middle;color:var(--text);}
       <button class="modal-close" onclick="cerrarModal()">✕</button>
     </div>
     <div class="modal-body">
-
-      <!-- Saldo en tiempo real -->
       <div class="saldo-panel">
         <div class="saldo-item">
           <span class="saldo-lbl">Monto OP</span>
           <span class="saldo-val" id="m-monto">$0</span>
         </div>
-        <div class="saldo-div"></div>
-        <div class="saldo-item">
-          <span class="saldo-lbl">Facturas aplicadas</span>
+        <div class="saldo-item" style="border-left:1px solid var(--border2); padding-left:20px">
+          <span class="saldo-lbl">Aplicado</span>
           <span class="saldo-val" id="m-aplicado">$0</span>
         </div>
-        <div class="saldo-div"></div>
-        <div class="saldo-item ret-row">
-          <label>Ret. Ganancias</label>
+        <div class="saldo-item" style="border-left:1px solid var(--border2); padding-left:20px">
+          <span class="saldo-lbl">Ret. Ganancias</span>
           <input class="ret-input" type="number" id="ret-g" min="0" step="0.01" value="0" oninput="recalcularSaldo()">
         </div>
-        <div class="saldo-item ret-row">
-          <label>Ret. IIBB</label>
+        <div class="saldo-item">
+          <span class="saldo-lbl">Ret. IIBB</span>
           <input class="ret-input" type="number" id="ret-i" min="0" step="0.01" value="0" oninput="recalcularSaldo()">
         </div>
-        <div class="saldo-div"></div>
-        <div class="saldo-item">
-          <span class="saldo-lbl">Saldo</span>
-          <span class="saldo-val" id="m-saldo">$0</span>
+        <div class="saldo-item" style="border-left:1px solid var(--border2); padding-left:20px">
+          <span class="saldo-lbl">Saldo a aplicar</span>
+          <span class="saldo-val" id="m-saldo" style="color:var(--yellow-t)">$0</span>
         </div>
       </div>
 
-      <!-- Facturas del prestador para aplicar -->
-      <div>
-        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);margin-bottom:10px;">
-          Facturas del prestador — seleccioná las que corresponden a esta OP
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="fact-modal-table">
-            <thead>
-              <tr>
-                <th style="width:36px"></th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Factura</th>
-                <th style="text-align:right">Importe</th>
-                <th style="text-align:right">Monto a aplicar</th>
-              </tr>
-            </thead>
-            <tbody id="tb-modal-fact"></tbody>
-          </table>
-        </div>
-      </div>
-
+      <table class="fact-modal-table">
+        <thead>
+          <tr>
+            <th style="width:30px"></th>
+            <th>Fecha</th>
+            <th>Factura</th>
+            <th style="text-align:right">Total Fac.</th>
+            <th style="text-align:right">Monto a aplicar</th>
+          </tr>
+        </thead>
+        <tbody id="tb-modal-fact"></tbody>
+      </table>
     </div>
     <div class="modal-ftr">
-      <span style="font-size:11px;color:var(--text-dim)" id="m-hint"></span>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-ghost"  onclick="cerrarModal()">Cancelar</button>
-        <button class="btn btn-green"  id="btn-guardar" onclick="guardarOP()">💾 Guardar</button>
-      </div>
+      <button class="btn btn-ghost" onclick="cerrarModal()" style="margin-right:10px">Cancelar</button>
+      <button class="btn btn-green" id="btn-guardar" onclick="guardarOP()">💾 Guardar OP</button>
     </div>
   </div>
 </div>
@@ -281,147 +211,151 @@ td{padding:7px 12px;vertical-align:middle;color:var(--text);}
 <div id="toast"></div>
 
 <script>
-// ── Estado global ────────────────────────────────────────────────────
-let dataActual   = { rows: [], facturas: [], ops: [] };
-let opActual     = null;
+let typingTimer;
+let dataActual = { rows: [], facturas: [], ops: [] };
+let opActual = null;
 
-// ── Tema ─────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", () => {
-  const t = localStorage.getItem("cc_theme") || "dark";
-  aplicarTema(t, false);
+// Buscador con delay (debounce)
+document.getElementById('busqueda').addEventListener('input', function() {
+  clearTimeout(typingTimer);
+  const val = this.value.trim();
+  const listDiv = document.getElementById('lista-prestadores');
+  
+  if (val.length < 3) {
+    listDiv.innerHTML = '<div class="sidebar-empty">Escribí al menos 3 letras...</div>';
+    return;
+  }
+  
+  listDiv.innerHTML = '<div class="sidebar-empty">Buscando...</div>';
+  typingTimer = setTimeout(() => buscarPrestadores(val), 500);
 });
-function setTheme(t){ aplicarTema(t, true); localStorage.setItem("cc_theme", t); }
-function aplicarTema(t, anim){
-  if(!anim) document.documentElement.style.transition = "none";
-  document.documentElement.setAttribute("data-theme", t);
-  if(!anim) setTimeout(() => document.documentElement.style.transition = "", 50);
-  document.querySelectorAll(".theme-swatch").forEach(s =>
-    s.classList.toggle("active", s.dataset.theme === t));
-}
 
-// ── Búsqueda ─────────────────────────────────────────────────────────
-async function buscar(){
-  const q = document.getElementById("busqueda").value.trim();
-  if(!q){ showToast("Ingresá un CUIT o nombre.", "error"); return; }
+async function buscarPrestadores(query) {
+  try {
+    const res = await fetch(`/ops/api/buscar_prestadores?q=${encodeURIComponent(query)}`);
+    const prestadores = await res.json();
+    const listDiv = document.getElementById('lista-prestadores');
+    
+    if (prestadores.length === 0) {
+      listDiv.innerHTML = '<div class="sidebar-empty">No se encontraron prestadores.</div>';
+      return;
+    }
 
-  const tb = document.getElementById("tb-main");
-  tb.innerHTML = `<tr><td colspan="7" class="empty-msg"><span class="spinner"></span>Buscando...</td></tr>`;
-
-  try{
-    const res  = await fetch(`/ops/api/cuenta_corriente?q=${encodeURIComponent(q)}`);
-    const data = await res.json();
-    dataActual = data;
-    renderTabla(data.rows);
-    const nFact = data.facturas.length, nOps = data.ops.length;
-    document.getElementById("cnt-rows").textContent = `${nFact + nOps} registros`;
-    document.getElementById("sub-info").textContent = `${nFact} facturas · ${nOps} OPs`;
-  }catch(e){
-    showToast("Error al buscar: " + e.message, "error");
-    tb.innerHTML = `<tr><td colspan="7" class="empty-msg">Error de conexión</td></tr>`;
+    listDiv.innerHTML = prestadores.map(p => `
+      <div class="prestador-item" onclick="cargarCuentaCorriente('${p.cuit}', '${p.nombre.replace(/'/g, "\\'")}', this)">
+        <div class="prestador-name">${p.nombre}</div>
+        <div class="prestador-cuit">CUIT: ${p.cuit}</div>
+      </div>
+    `).join("");
+  } catch (e) {
+    showToast("Error buscando prestadores", "error");
   }
 }
 
-function limpiar(){
-  document.getElementById("busqueda").value = "";
-  dataActual = { rows: [], facturas: [], ops: [] };
-  document.getElementById("tb-main").innerHTML =
-    `<tr><td colspan="7" class="empty-msg"><span class="ei">🔍</span>Buscá un prestador para ver sus movimientos</td></tr>`;
-  document.getElementById("sub-info").textContent = "Buscá un prestador para comenzar";
-  document.getElementById("cnt-rows").textContent = "—";
+async function cargarCuentaCorriente(cuit, nombre, element) {
+  // Pintar como activo en la lista
+  document.querySelectorAll('.prestador-item').forEach(el => el.classList.remove('active'));
+  if(element) element.classList.add('active');
+
+  // Actualizar Título
+  document.getElementById('lbl-nombre').textContent = nombre;
+  document.getElementById('lbl-cuit').textContent = cuit;
+  document.getElementById("tb-main").innerHTML = `<tr><td colspan="6" class="empty-msg">Cargando datos...</td></tr>`;
+
+  try {
+    const res = await fetch(`/ops/api/cuenta_corriente?cuit=${encodeURIComponent(cuit)}`);
+    dataActual = await res.json();
+    renderTabla(dataActual.rows);
+  } catch(e) {
+    showToast("Error cargando cuenta corriente", "error");
+  }
 }
 
-// ── Render tabla unificada ────────────────────────────────────────────
-function renderTabla(rows){
+function renderTabla(rows) {
   const tb = document.getElementById("tb-main");
-  if(!rows || !rows.length){
-    tb.innerHTML = `<tr><td colspan="7" class="empty-msg"><span class="ei">📭</span>Sin registros para este prestador</td></tr>`;
+  if(!rows.length) {
+    tb.innerHTML = `<tr><td colspan="6" class="empty-msg">No hay movimientos.</td></tr>`;
     return;
   }
 
   tb.innerHTML = rows.map((r, i) => {
-    if(r.tipo === "op"){
+    if(r.tipo === "op") {
       const saldo = r.saldo ?? 0;
-      let saldoBadge;
-      if(Math.abs(saldo) < 0.01)
-        saldoBadge = `<span class="badge b-saldo-ok">Saldado</span>`;
-      else if(saldo < 0)
-        saldoBadge = `<span class="badge b-saldo-neg">${fmtMonto(saldo)}</span>`;
-      else
-        saldoBadge = `<span class="badge b-saldo-pend">${fmtMonto(saldo)} pend.</span>`;
-
-      return `<tr class="row-op" onclick="abrirModalPorIdx(${i})" title="Click para aplicar facturas y retenciones">
+      let badge = Math.abs(saldo) < 0.01 ? `<span class="badge b-pagada">Saldado</span>` 
+                : `<span class="badge b-impaga">Pendiente: ${fmtMonto(saldo)}</span>`;
+      
+      return `<tr class="row-op" onclick="abrirModalPorIdx(${i})">
         <td class="tipo-cell"><div class="tipo-bar bar-op"></div></td>
         <td><span class="badge b-op">OP</span></td>
-        <td>${esc(r.fecha)}</td>
-        <td style="font-weight:600">${esc(r.numero_op)}</td>
-        <td style="color:var(--text-dim);font-size:11px">${esc(r.nombre)}</td>
+        <td>${r.fecha}</td>
+        <td style="font-weight:600">${r.numero_op}</td>
         <td class="importe">${fmtMonto(r.monto)}</td>
-        <td>${saldoBadge}</td>
+        <td>${badge}</td>
       </tr>`;
     } else {
-      const pagada = r.se_pago && r.se_pago !== "";
-      const estadoBadge = pagada
-        ? `<span class="badge b-pagada">Pagada</span>`
-        : `<span class="badge b-impaga">Pendiente</span>`;
+      // Dibujamos las etiquetas de estado de Facturas
+      let badge = "";
+      if (r.estado_calc === "Pagada") {
+          badge = `<span class="badge b-pagada">Pagada</span>`;
+      } else if (r.estado_calc === "Pagada sin aplicar") {
+          badge = `<span class="badge" style="background:rgba(93,219,110,.1);color:var(--green-t);border:1px dashed var(--green-b);">Pagada sin aplicar</span>`;
+      } else if (r.estado_calc === "En auditoría") {
+          badge = `<span class="badge" style="background:rgba(240,192,64,.1);color:var(--yellow-t);border:1px solid var(--yellow-b);">En auditoría</span>`;
+      } else {
+          badge = `<span class="badge b-impaga">Pendiente</span>`;
+      }
+
       return `<tr class="row-fact">
         <td class="tipo-cell"><div class="tipo-bar bar-fact"></div></td>
-        <td><span style="font-size:11px;color:var(--text-dim)">FAC</span></td>
-        <td>${esc(r.fecha)}</td>
-        <td>${esc(r.factura || (r.punto_venta+"-"+r.numero_desde))}</td>
-        <td style="color:var(--text-dim);font-size:11px">${esc(r.denominacion)}</td>
+        <td style="font-size:11px;color:var(--text-dim)">FAC</td>
+        <td>${r.fecha}</td>
+        <td style="font-family:'IBM Plex Mono'">${r.factura || r.punto_venta+"-"+r.numero_desde}</td>
         <td class="importe">${fmtMonto(r.importe || r.imp_total)}</td>
-        <td>${estadoBadge}</td>
+        <td>${badge}</td>
       </tr>`;
     }
   }).join("");
 }
 
-// ── Modal ─────────────────────────────────────────────────────────────
+// ── MODAL LOGIC ──
 function abrirModalPorIdx(idx){
-  // buscar el item op en rows y hallar su índice dentro de ops[]
   const item = dataActual.rows[idx];
   if(!item || item.tipo !== "op") return;
   const opIdx = dataActual.ops.findIndex(o => o.id === item.id);
   if(opIdx === -1) return;
-  abrirModal(opIdx);
-}
-
-function abrirModal(idx){
-  opActual = dataActual.ops[idx];
+  
+  opActual = dataActual.ops[opIdx];
   const op = opActual;
 
   document.getElementById("m-title").textContent = `OP N° ${op.numero_op}`;
-  document.getElementById("m-sub").textContent   = `${op.nombre} · ${op.fecha} · Monto: ${fmtMonto(op.monto)}`;
+  document.getElementById("m-sub").textContent   = `${op.fecha} · Monto: ${fmtMonto(op.monto)}`;
   document.getElementById("m-monto").textContent = fmtMonto(op.monto);
   document.getElementById("ret-g").value = op.ret_ganancias || 0;
-  document.getElementById("ret-i").value = op.ret_iibb      || 0;
+  document.getElementById("ret-i").value = op.ret_iibb || 0;
 
   const tb = document.getElementById("tb-modal-fact");
   const facts = dataActual.facturas;
+  
   if(!facts.length){
-    tb.innerHTML = `<tr><td colspan="6" class="empty-msg">No hay facturas para este prestador</td></tr>`;
+    tb.innerHTML = `<tr><td colspan="5" class="empty-msg">No hay facturas cargadas</td></tr>`;
   } else {
     tb.innerHTML = facts.map(f => {
-      const fid     = f.id;
+      const fid = f.id;
       const checked = op.fact_ids && op.fact_ids.includes(fid);
       const montoAp = (op.montos_aplicados && op.montos_aplicados[fid]) || (checked ? (f.importe || f.imp_total) : 0);
-      const pagada  = f.se_pago && f.se_pago !== "";
-      const badge   = pagada
-        ? `<span class="badge b-pagada" style="font-size:9px">Pagada</span>`
-        : `<span class="badge b-impaga" style="font-size:9px">Pendiente</span>`;
+      
+      let badgeModal = "";
+      if (f.estado_calc === "Pagada") badgeModal = `<span class="badge b-pagada" style="font-size:9px">Pagada</span>`;
+      else if (f.estado_calc === "Pagada sin aplicar") badgeModal = `<span class="badge" style="font-size:9px;background:rgba(93,219,110,.1);color:var(--green-t);border:1px dashed var(--green-b);">Pagada s/aplicar</span>`;
+      else if (f.estado_calc === "En auditoría") badgeModal = `<span class="badge" style="font-size:9px;background:rgba(240,192,64,.1);color:var(--yellow-t);border:1px solid var(--yellow-b);">Auditoría</span>`;
+      else badgeModal = `<span class="badge b-impaga" style="font-size:9px">Pendiente</span>`;
+
       return `<tr id="frow-${fid}" class="${checked ? 'selected-row' : ''}">
-        <td><input type="checkbox" class="chk" id="chk-${fid}" data-fid="${fid}"
-             data-importe="${f.importe || f.imp_total}"
-             ${checked ? "checked" : ""}
-             onchange="toggleFactura(this)"></td>
-        <td>${badge}</td>
-        <td class="mono">${esc(f.fecha)}</td>
-        <td class="mono">${esc(f.factura || f.punto_venta+"-"+f.numero_desde)}</td>
+        <td><input type="checkbox" class="chk" id="chk-${fid}" data-fid="${fid}" data-importe="${f.importe || f.imp_total}" ${checked ? "checked" : ""} onchange="toggleFactura(this)"></td>
+        <td>${f.fecha}</td>
+        <td style="font-family:'IBM Plex Mono'">${f.factura || f.punto_venta+"-"+f.numero_desde} <div style="margin-top:4px">${badgeModal}</div></td>
         <td class="importe">${fmtMonto(f.importe || f.imp_total)}</td>
-        <td><input type="number" class="monto-input" id="monto-${fid}"
-             value="${montoAp}" min="0" step="0.01"
-             ${checked ? "" : "disabled"}
-             oninput="recalcularSaldo()"></td>
+        <td style="text-align:right"><input type="number" class="monto-input" id="monto-${fid}" value="${montoAp}" ${checked ? "" : "disabled"} oninput="recalcularSaldo()"></td>
       </tr>`;
     }).join("");
   }
@@ -430,106 +364,75 @@ function abrirModal(idx){
   document.getElementById("overlay").classList.add("open");
 }
 
-function cerrarModal(){
-  document.getElementById("overlay").classList.remove("open");
-  opActual = null;
-}
+function cerrarModal(){ document.getElementById("overlay").classList.remove("open"); opActual = null; }
 function cerrarModalFuera(e){ if(e.target === document.getElementById("overlay")) cerrarModal(); }
 
 function toggleFactura(chk){
-  const fid   = chk.dataset.fid;
+  const fid = chk.dataset.fid;
   const input = document.getElementById(`monto-${fid}`);
-  const row   = document.getElementById(`frow-${fid}`);
+  const row = document.getElementById(`frow-${fid}`);
   if(chk.checked){
-    input.disabled = false;
-    input.value    = chk.dataset.importe;
-    row.classList.add("selected-row");
+    input.disabled = false; input.value = chk.dataset.importe; row.classList.add("selected-row");
   } else {
-    input.disabled = true;
-    input.value    = 0;
-    row.classList.remove("selected-row");
+    input.disabled = true; input.value = 0; row.classList.remove("selected-row");
   }
   recalcularSaldo();
 }
 
 function recalcularSaldo(){
   if(!opActual) return;
-  const montoOP = opActual.monto || 0;
-  const retG    = parseFloat(document.getElementById("ret-g").value) || 0;
-  const retI    = parseFloat(document.getElementById("ret-i").value) || 0;
-
-  let aplicado = 0;
-  document.querySelectorAll(".chk:checked").forEach(chk => {
-    const fid   = chk.dataset.fid;
-    const input = document.getElementById(`monto-${fid}`);
-    aplicado   += parseFloat(input.value) || 0;
-  });
-
-  const saldo = montoOP - aplicado + retG + retI;
-
-  document.getElementById("m-aplicado").textContent = fmtMonto(aplicado);
-
-  const sEl = document.getElementById("m-saldo");
-  sEl.textContent = fmtMonto(saldo);
-  sEl.className   = "saldo-val " + (Math.abs(saldo) < 0.01 ? "zero" : saldo < 0 ? "neg" : "pos");
-
-  const hint = document.getElementById("m-hint");
-  if(Math.abs(saldo) < 0.01)
-    hint.textContent = "✓ Las facturas seleccionadas quedarán marcadas como pagadas al guardar.";
-  else if(saldo < 0)
-    hint.textContent = `⚠ Saldo negativo: ${fmtMonto(Math.abs(saldo))} a favor del prestador.`;
-  else
-    hint.textContent = `Quedan ${fmtMonto(saldo)} sin aplicar.`;
-}
-
-// ── Guardar OP ────────────────────────────────────────────────────────
-async function guardarOP(){
-  if(!opActual){ showToast("No hay OP activa.", "error"); return; }
-
+  const montoOP = parseFloat(opActual.monto) || 0;
   const retG = parseFloat(document.getElementById("ret-g").value) || 0;
   const retI = parseFloat(document.getElementById("ret-i").value) || 0;
 
-  const aplicaciones = [];
+  let aplicado = 0;
   document.querySelectorAll(".chk:checked").forEach(chk => {
-    const fid   = chk.dataset.fid;
-    const monto = parseFloat(document.getElementById(`monto-${fid}`).value) || 0;
-    aplicaciones.push({ factura_id: parseInt(fid), monto_aplicado: monto });
+    aplicado += parseFloat(document.getElementById(`monto-${chk.dataset.fid}`).value) || 0;
   });
 
-  const btn = document.getElementById("btn-guardar");
-  btn.disabled = true; btn.textContent = "Guardando...";
+  const saldo = montoOP - aplicado + retG + retI;
+  document.getElementById("m-aplicado").textContent = fmtMonto(aplicado);
+  document.getElementById("m-saldo").textContent = fmtMonto(saldo);
+}
 
-  try{
-    const res  = await fetch("/ops/api/guardar_op", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+async function guardarOP(){
+  if(!opActual) return;
+  const retG = parseFloat(document.getElementById("ret-g").value) || 0;
+  const retI = parseFloat(document.getElementById("ret-i").value) || 0;
+  const aplicaciones = [];
+  
+  document.querySelectorAll(".chk:checked").forEach(chk => {
+    aplicaciones.push({ factura_id: parseInt(chk.dataset.fid), monto_aplicado: parseFloat(document.getElementById(`monto-${chk.dataset.fid}`).value) || 0 });
+  });
+
+  document.getElementById("btn-guardar").disabled = true;
+  try {
+    const res = await fetch("/ops/api/guardar_op", {
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ op_id: opActual.id, ret_ganancias: retG, ret_iibb: retI, aplicaciones })
     });
     const data = await res.json();
     if(data.success){
-      showToast(data.marcadas_pagadas ? "✓ OP guardada. Facturas marcadas como pagadas." : "✓ OP guardada.", "success");
+      showToast("OP guardada", "success");
       cerrarModal();
-      buscar();
+      // Recargar la cuenta corriente del prestador actual
+      cargarCuentaCorriente(document.getElementById('lbl-cuit').textContent, document.getElementById('lbl-nombre').textContent);
     } else {
-      showToast("✗ Error: " + (data.error || "desconocido"), "error");
+      showToast("Error: " + data.error, "error");
     }
-  }catch(e){
-    showToast("Error de red: " + e.message, "error");
-  } finally {
-    btn.disabled = false; btn.innerHTML = "💾 Guardar";
+  } catch(e) {
+    showToast("Error de red", "error");
   }
+  document.getElementById("btn-guardar").disabled = false;
 }
 
-// ── Utilidades ────────────────────────────────────────────────────────
-function fmtMonto(n){
-  n = parseFloat(n) || 0;
-  return "$" + n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function esc(s){ if(!s) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+// Utils
+function fmtMonto(n){ return "$" + (parseFloat(n)||0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function showToast(msg, type){
   const t = document.getElementById("toast");
-  t.textContent = msg; t.className = "show " + (type||"");
-  clearTimeout(t._t); t._t = setTimeout(() => t.className = "", 3800);
+  t.textContent = msg; t.style.background = type === "error" ? "var(--red-b)" : "var(--green-b)";
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
 }
 </script>
 </body>

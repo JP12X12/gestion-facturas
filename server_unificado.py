@@ -218,13 +218,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
 
         # ── API Cuenta Corriente / OPs ────────────────────────────────
-        if path == "/ops/api/data":
-            return send_json(self, mod_ops.cuenta_corriente(qs))
         if path == "/ops/api/stats":
             return send_json(self, mod_ops.ops_stats())
-        if path == "/ops/api/cuenta_corriente":
+            
+        if path == "/ops/api/buscar_prestadores":
             q = qs.get("q", [""])[0].strip()
-            return send_json(self, mod_ops.cuenta_corriente_prestador(q))
+            return send_json(self, mod_ops.buscar_prestadores(q))
+            
+        if path == "/ops/api/cuenta_corriente":
+            cuit = qs.get("cuit", [""])[0].strip()
+            return send_json(self, mod_ops.cuenta_corriente_prestador(cuit))
 
         self.send_error(404, "Not found")
 
