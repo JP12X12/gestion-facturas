@@ -205,7 +205,6 @@ tbody tr:hover .td-pagado{
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
     <div class="logo-icon">F</div>
@@ -235,7 +234,6 @@ tbody tr:hover .td-pagado{
   </div>
 </header>
 
-<!-- UPLOAD -->
 <div class="upload-panel" id="upload-panel">
   <div class="upload-inner">
     <div class="upload-zone" onclick="document.getElementById('file-input').click()">
@@ -255,11 +253,20 @@ tbody tr:hover .td-pagado{
   </div>
 </div>
 
-<!-- FILTER -->
 <div class="filter-bar">
   <span class="fl">Filtros</span>
-  <input type="text" id="f-fd" placeholder="Desde (YYYY-MM-DD)" />
-  <input type="text" id="f-fh" placeholder="Hasta (YYYY-MM-DD)" />
+  
+  <div id="wrap-fecha-exacta" style="display:flex; align-items:center; gap:4px;">
+    <input type="text" id="f-fex" placeholder="Fecha (YYYY-MM-DD)" style="width:140px;" />
+    <button class="btn btn-ghost" onclick="toggleRangoFechas()" title="Cambiar a Filtro por Rango">⬌</button>
+  </div>
+  
+  <div id="wrap-fecha-rango" style="display:none; align-items:center; gap:4px;">
+    <input type="text" id="f-fd" placeholder="Desde (YYYY-MM-DD)" style="width:140px;" />
+    <input type="text" id="f-fh" placeholder="Hasta (YYYY-MM-DD)" style="width:140px;" />
+    <button class="btn btn-ghost" onclick="toggleRangoFechas()" title="Cambiar a Fecha Exacta">⬌</button>
+  </div>
+
   <input type="text" id="f-fac" placeholder="Nro Factura" />
   <input type="text" id="f-emi" placeholder="Emisor" />
   <select id="f-tipo">
@@ -281,7 +288,6 @@ tbody tr:hover .td-pagado{
   <button class="btn btn-ghost" onclick="toggleUpload()">📤 Importar</button>
 </div>
 
-<!-- ACTION BAR -->
 <div class="action-bar">
   <div class="results-count">
     Mostrando <span id="rc-show">0</span> de <span id="rc-total">0</span>
@@ -294,7 +300,6 @@ tbody tr:hover .td-pagado{
   </div>
 </div>
 
-<!-- TABLE -->
 <div class="table-wrap">
   <table>
     <thead>
@@ -314,7 +319,6 @@ tbody tr:hover .td-pagado{
   </table>
 </div>
 
-<!-- PAGINATOR -->
 <div id="paginator">
   <button class="pg-btn" id="pg-first" onclick="goPage(1)">⟨⟨</button>
   <button class="pg-btn" id="pg-prev" onclick="goPage(curPage-1)">⟨</button>
@@ -324,7 +328,6 @@ tbody tr:hover .td-pagado{
   <span style="color:var(--text-dim);font-size:11px;">Página <span id="pg-cur">1</span> de <span id="pg-total">1</span></span>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
@@ -334,6 +337,7 @@ const ROWS_PER_PAGE = 20;
 let curPage = 1;
 let curSort = "fecha_desc";
 let curFilters = {};
+let modoRango = false; // Control del toggle de fechas
 
 // ── THEME ──────────────────────────────────────────────────────────────
 function setTheme(name) {
@@ -486,6 +490,7 @@ function updatePaginator(total, page) {
 // ── CSV ────────────────────────────────────────────────────────────────
 function downloadCSV() {
   const p = new URLSearchParams();
+  if (curFilters.fecha)       p.set("fecha",       curFilters.fecha);
   if (curFilters.fecha_desde) p.set("fecha_desde", curFilters.fecha_desde);
   if (curFilters.fecha_hasta) p.set("fecha_hasta", curFilters.fecha_hasta);
   if (curFilters.factura)     p.set("factura",     curFilters.factura);
@@ -503,7 +508,6 @@ function downloadCSV() {
 
 // ── RENDER ─────────────────────────────────────────────────────────────
 function formatAnocorreo(correo, anio) {
-  // Transforma correo y anio → correo/anio
   if (!correo || !anio) return "—";
   return `${String(correo).trim()}/${String(anio).trim()}`;
 }
@@ -552,12 +556,10 @@ function toggleSort(campo) {
   const [asc, desc] = map[campo];
   curSort = (curSort === desc) ? asc : desc;
 
-  // Reset all sort headers
   document.querySelectorAll(".th-sort").forEach(th => {
     th.classList.remove("asc","desc");
   });
 
-  // Set active header
   const thId = "th-" + campo;
   const th = document.getElementById(thId);
   if (th) th.classList.add(curSort.endsWith("_asc") ? "asc" : "desc");
@@ -566,9 +568,24 @@ function toggleSort(campo) {
 }
 
 // ── FILTERS ────────────────────────────────────────────────────────────
+function toggleRangoFechas() {
+  modoRango = !modoRango;
+  if(modoRango) {
+    document.getElementById('wrap-fecha-exacta').style.display = 'none';
+    document.getElementById('wrap-fecha-rango').style.display = 'flex';
+    document.getElementById('f-fex').value = "";
+  } else {
+    document.getElementById('wrap-fecha-rango').style.display = 'none';
+    document.getElementById('wrap-fecha-exacta').style.display = 'flex';
+    document.getElementById('f-fd').value = "";
+    document.getElementById('f-fh').value = "";
+  }
+}
+
 function applyFilters() {
   const pago = document.getElementById("f-pago").value;
   loadData({
+    fecha:        document.getElementById("f-fex").value.trim(),
     fecha_desde:  document.getElementById("f-fd").value.trim(),
     fecha_hasta:  document.getElementById("f-fh").value.trim(),
     factura:      document.getElementById("f-fac").value.trim(),
@@ -580,7 +597,7 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  ["f-fd","f-fh","f-fac","f-emi"].forEach(id => document.getElementById(id).value = "");
+  ["f-fex","f-fd","f-fh","f-fac","f-emi"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("f-tipo").value = "";
   document.getElementById("f-pago").value = "";
   loadData({}, 1);
@@ -602,7 +619,6 @@ function fmtImporte(v) {
 }
 
 function fmtPeriodo(v) {
-  // "202509" → "Sep 2025"
   if (!v || v.length < 6) return v;
   const s = String(v).replace(/\D/g,"");
   if (s.length < 6) return v;

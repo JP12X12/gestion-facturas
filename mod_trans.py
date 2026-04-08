@@ -57,6 +57,17 @@ def trans_query(params_qs):
     where  = "WHERE 1=1"
     args   = []
 
+    def ymd(d):
+        d = str(d).strip()
+        if not d: return d
+        # Si viene con guiones (ej. YYYY-MM-DD) le volamos los guiones
+        if "-" in d:
+            return d.replace("-", "")
+        # Si viene con barras (ej. DD/MM/YYYY) lo damos vuelta a YYYYMMDD
+        p = d.split("/")
+        return (p[2]+p[1]+p[0]) if len(p)==3 else d
+
+    fecha       = params_qs.get("fecha",       [""])[0]
     fecha_desde = params_qs.get("fecha_desde", [""])[0]
     fecha_hasta = params_qs.get("fecha_hasta", [""])[0]
     nro_op      = params_qs.get("nro_op",  [""])[0]
@@ -66,14 +77,12 @@ def trans_query(params_qs):
     debito      = params_qs.get("debito",  [""])[0]
     estado      = params_qs.get("estado",  [""])[0]
 
-    # Convertimos la fecha que ingresa el usuario "DD/MM/YYYY" a "YYYYMMDD"
-    def ymd(d):
-        p = d.split("/")
-        return (p[2]+p[1]+p[0]) if len(p)==3 else d
-
-    # 🚀 LA MAGIA: Le enseñamos a SQLite a leer "DD/MM/YYYY" como "YYYYMMDD"
+    # ¡ESTO FALTABA! Define fecha_sql para poder armar la query de fechas
     fecha_sql = "substr(fecha_solicitud,7,4)||substr(fecha_solicitud,4,2)||substr(fecha_solicitud,1,2)"
 
+    if fecha:
+        where += f" AND {fecha_sql} = ?"
+        args.append(ymd(fecha))
     if fecha_desde:
         where += f" AND {fecha_sql} >= ?"
         args.append(ymd(fecha_desde))
@@ -100,11 +109,11 @@ def trans_query(params_qs):
         where += " AND estado LIKE ?"
         args.append(f"%{estado}%")
 
-    # 🚀 ORDENAMIENTO CORRECTO POR FECHA REAL
+    # ORDENAMIENTO CORRECTO POR FECHA REAL (fallback en numero en lugar de id para que no rompa si usaste numero como PK)
     if sort == "fecha_asc":
-        order = f"{fecha_sql} ASC, id ASC"
+        order = f"{fecha_sql} ASC, numero ASC"
     else:
-        order = f"{fecha_sql} DESC, id DESC"
+        order = f"{fecha_sql} DESC, numero DESC"
 
     conn = sqlite3.connect(config.DB_TRANS)
     conn.row_factory = sqlite3.Row
@@ -155,7 +164,6 @@ def trans_csv(params_qs):
     conn = sqlite3.connect(config.DB_TRANS)
     conn.row_factory = sqlite3.Row
     
-    # También arreglamos la descarga del CSV para que salga ordenado perfecto
     fecha_sql = "substr(fecha_solicitud,7,4)||substr(fecha_solicitud,4,2)||substr(fecha_solicitud,1,2)"
     
     rows = conn.execute(f"SELECT * FROM transferencias ORDER BY {fecha_sql} DESC").fetchall()
@@ -174,6 +182,7 @@ def trans_csv(params_qs):
     for r in rows:
         w.writerow([r.get(k,"") for k,_ in cols])
     return buf.getvalue().encode("utf-8-sig")
+
 def _process_txt_trans(job_id, file_bytes):
     def upd(step, pct):
         with _jobs_lock:
